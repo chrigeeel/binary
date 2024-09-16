@@ -1,4 +1,4 @@
-module github.com/gagliardetto/binary
+module github.com/chrigeeel/binary
 
 go 1.14
 
