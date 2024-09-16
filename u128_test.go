@@ -24,19 +24,31 @@ func TestUint128(t *testing.T) {
 	}
 
 	{
-		u128 := NewUint128LittleEndian()
+		u128 := NewUint128LE()
 		err := u128.UnmarshalWithDecoder(NewBorshDecoder(data))
 		require.NoError(t, err)
 		require.Equal(t, uint64(3102), u128.Hi)
 		require.Equal(t, uint64(18446744073707401011), u128.Lo)
 		require.Equal(t, parsed.BigInt(), u128.BigInt())
 		require.Equal(t, parsed.String(), u128.DecimalString())
+
+		*u128 = NewUint128LEFromBytes(data)
+		require.Equal(t, uint64(3102), u128.Hi)
+		require.Equal(t, uint64(18446744073707401011), u128.Lo)
+		require.Equal(t, parsed.BigInt(), u128.BigInt())
+		require.Equal(t, parsed.String(), u128.DecimalString())
 	}
 	{
-		u128 := NewUint128BigEndian()
+		u128 := NewUint128BE()
 		ReverseBytes(data)
 		err := u128.UnmarshalWithDecoder(NewBorshDecoder(data))
 		require.NoError(t, err)
+		require.Equal(t, uint64(3102), u128.Hi)
+		require.Equal(t, uint64(18446744073707401011), u128.Lo)
+		require.Equal(t, parsed.BigInt(), u128.BigInt())
+		require.Equal(t, parsed.String(), u128.DecimalString())
+
+		*u128 = NewUint128BEFromBytes(data)
 		require.Equal(t, uint64(3102), u128.Hi)
 		require.Equal(t, uint64(18446744073707401011), u128.Lo)
 		require.Equal(t, parsed.BigInt(), u128.BigInt())

@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"math/bits"
 	"strings"
 )
 
@@ -33,16 +34,318 @@ type Uint128 struct {
 	Endianness binary.ByteOrder
 }
 
-func NewUint128BigEndian() *Uint128 {
+func NewUint128BE() *Uint128 {
 	return &Uint128{
 		Endianness: binary.BigEndian,
 	}
 }
 
-func NewUint128LittleEndian() *Uint128 {
+func NewUint128LE() *Uint128 {
 	return &Uint128{
 		Endianness: binary.LittleEndian,
 	}
+}
+
+func NewUint128From64(x uint64, endianness ...binary.ByteOrder) Uint128 {
+	r := Uint128{
+		Lo: x,
+		Hi: 0,
+	}
+
+	if len(endianness) == 1 {
+		r.Endianness = endianness[0]
+	}
+
+	return r
+}
+
+func NewUint128LEFromBytes(b []byte) Uint128 {
+	return Uint128{
+		Lo:         binary.LittleEndian.Uint64(b[:8]),
+		Hi:         binary.LittleEndian.Uint64(b[8:]),
+		Endianness: binary.LittleEndian,
+	}
+}
+
+func NewUint128BEFromBytes(b []byte) Uint128 {
+	return Uint128{
+		Lo:         binary.BigEndian.Uint64(b[8:]),
+		Hi:         binary.BigEndian.Uint64(b[:8]),
+		Endianness: binary.BigEndian,
+	}
+}
+
+func (i Uint128) IsZero() bool {
+	return i.Lo == 0 && i.Hi == 0
+}
+
+func (i Uint128) Equals(v Uint128) bool {
+	return i.Lo == v.Lo && i.Hi == v.Hi
+}
+
+func (i Uint128) Equals64(v uint64) bool {
+	return i.Lo == v && i.Hi == 0
+}
+
+func (i Uint128) Cmp(v Uint128) int {
+	if i.Equals(v) {
+		return 0
+	} else if i.Hi < v.Hi || (i.Hi == v.Hi && i.Lo < v.Lo) {
+		return -1
+	} else {
+		return 1
+	}
+}
+
+func (i Uint128) Cmp64(v uint64) int {
+	if i.Hi == 0 && i.Lo == v {
+		return 0
+	} else if i.Hi == 0 && i.Lo < v {
+		return -1
+	} else {
+		return 1
+	}
+}
+
+func (i Uint128) And(v Uint128) Uint128 {
+	return Uint128{Lo: i.Lo & v.Lo, Hi: i.Hi & v.Hi}
+}
+
+func (i Uint128) And64(v uint64) Uint128 {
+	return Uint128{Lo: i.Lo & v, Hi: i.Hi & 0}
+}
+
+func (i Uint128) Or(v Uint128) Uint128 {
+	return Uint128{Lo: i.Lo | v.Lo, Hi: i.Hi | v.Hi}
+}
+
+func (u Uint128) Or64(v uint64) Uint128 {
+	return Uint128{Lo: u.Lo | v, Hi: u.Hi | 0}
+}
+
+// Xor returns u^v.
+func (i Uint128) Xor(v Uint128) Uint128 {
+	return Uint128{Lo: i.Lo ^ v.Lo, Hi: i.Hi ^ v.Hi, Endianness: i.Endianness}
+}
+
+// Xor64 returns u^v.
+func (i Uint128) Xor64(v uint64) Uint128 {
+	return Uint128{Lo: i.Lo ^ v, Hi: i.Hi ^ 0, Endianness: i.Endianness}
+}
+
+// Add returns u+v.
+func (i Uint128) Add(v Uint128) Uint128 {
+	lo, carry := bits.Add64(i.Lo, v.Lo, 0)
+	hi, carry := bits.Add64(i.Hi, v.Hi, carry)
+	if carry != 0 {
+		panic("overflow")
+	}
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// AddWrap returns u+v with wraparound semantics.
+func (i Uint128) AddWrap(v Uint128) Uint128 {
+	lo, carry := bits.Add64(i.Lo, v.Lo, 0)
+	hi, _ := bits.Add64(i.Hi, v.Hi, carry)
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// Add64 returns u+v.
+func (i Uint128) Add64(v uint64) Uint128 {
+	lo, carry := bits.Add64(i.Lo, v, 0)
+	hi, carry := bits.Add64(i.Hi, 0, carry)
+	if carry != 0 {
+		panic("overflow")
+	}
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// AddWrap64 returns u+v with wraparound semantics.
+func (i Uint128) AddWrap64(v uint64) Uint128 {
+	lo, carry := bits.Add64(i.Lo, v, 0)
+	hi := i.Hi + carry
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// Sub returns u-v.
+func (i Uint128) Sub(v Uint128) Uint128 {
+	lo, borrow := bits.Sub64(i.Lo, v.Lo, 0)
+	hi, borrow := bits.Sub64(i.Hi, v.Hi, borrow)
+	if borrow != 0 {
+		panic("underflow")
+	}
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// SubWrap returns u-v with wraparound semantics.
+func (i Uint128) SubWrap(v Uint128) Uint128 {
+	lo, borrow := bits.Sub64(i.Lo, v.Lo, 0)
+	hi, _ := bits.Sub64(i.Hi, v.Hi, borrow)
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// Sub64 returns u-v.
+func (i Uint128) Sub64(v uint64) Uint128 {
+	lo, borrow := bits.Sub64(i.Lo, v, 0)
+	hi, borrow := bits.Sub64(i.Hi, 0, borrow)
+	if borrow != 0 {
+		panic("underflow")
+	}
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// SubWrap64 returns u-v with wraparound semantics.
+func (i Uint128) SubWrap64(v uint64) Uint128 {
+	lo, borrow := bits.Sub64(i.Lo, v, 0)
+	hi := i.Hi - borrow
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// Mul returns u*v, panicking on overflow.
+func (i Uint128) Mul(v Uint128) Uint128 {
+	hi, lo := bits.Mul64(i.Lo, v.Lo)
+	p0, p1 := bits.Mul64(i.Hi, v.Lo)
+	p2, p3 := bits.Mul64(i.Lo, v.Hi)
+	hi, c0 := bits.Add64(hi, p1, 0)
+	hi, c1 := bits.Add64(hi, p3, c0)
+	if (i.Hi != 0 && v.Hi != 0) || p0 != 0 || p2 != 0 || c1 != 0 {
+		panic("overflow")
+	}
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// MulWrap returns u*v with wraparound semantics.
+func (i Uint128) MulWrap(v Uint128) Uint128 {
+	hi, lo := bits.Mul64(i.Lo, v.Lo)
+	hi += i.Hi*v.Lo + i.Lo*v.Hi
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// Mul64 returns u*v, panicking on overflow.
+func (i Uint128) Mul64(v uint64) Uint128 {
+	hi, lo := bits.Mul64(i.Lo, v)
+	p0, p1 := bits.Mul64(i.Hi, v)
+	hi, c0 := bits.Add64(hi, p1, 0)
+	if p0 != 0 || c0 != 0 {
+		panic("overflow")
+	}
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// MulWrap64 returns u*v with wraparound semantics.
+func (i Uint128) MulWrap64(v uint64) Uint128 {
+	hi, lo := bits.Mul64(i.Lo, v)
+	hi += i.Hi * v
+	return Uint128{Lo: lo, Hi: hi, Endianness: i.Endianness}
+}
+
+// Div returns u/v.
+func (i Uint128) Div(v Uint128) Uint128 {
+	q, _ := i.QuoRem(v)
+	return q
+}
+
+// Div64 returns u/v.
+func (i Uint128) Div64(v uint64) Uint128 {
+	q, _ := i.QuoRem64(v)
+	return q
+}
+
+// QuoRem returns q = u/v and r = u%v.
+func (i Uint128) QuoRem(v Uint128) (q, r Uint128) {
+	if v.Hi == 0 {
+		var r64 uint64
+		q, r64 = i.QuoRem64(v.Lo)
+		r = NewUint128From64(r64, i.Endianness)
+	} else {
+		n := uint(bits.LeadingZeros64(v.Hi))
+		v1 := v.Lsh(n)
+		i1 := i.Rsh(1)
+		tq, _ := bits.Div64(i1.Hi, i1.Lo, v1.Hi)
+		tq >>= 63 - n
+		if tq != 0 {
+			tq--
+		}
+		q = NewUint128From64(tq, i.Endianness)
+		r = i.Sub(v.Mul64(tq))
+		if r.Cmp(v) >= 0 {
+			q = q.Add64(1)
+			r = r.Sub(v)
+		}
+	}
+	return
+}
+
+// QuoRem64 returns q = u/v and r = u%v.
+func (i Uint128) QuoRem64(v uint64) (q Uint128, r uint64) {
+	if i.Hi < v {
+		q.Lo, r = bits.Div64(i.Hi, i.Lo, v)
+	} else {
+		q.Hi, r = bits.Div64(0, i.Hi, v)
+		q.Lo, r = bits.Div64(r, i.Lo, v)
+	}
+	return
+}
+
+// Mod returns r = u%v.
+func (i Uint128) Mod(v Uint128) Uint128 {
+	_, r := i.QuoRem(v)
+	return r
+}
+
+// Mod64 returns r = u%v.
+func (i Uint128) Mod64(v uint64) uint64 {
+	_, r := i.QuoRem64(v)
+	return r
+}
+
+// Lsh returns u<<n.
+func (i Uint128) Lsh(n uint) Uint128 {
+	if n > 64 {
+		return Uint128{Lo: 0, Hi: i.Lo << (n - 64), Endianness: i.Endianness}
+	}
+	return Uint128{Lo: i.Lo << n, Hi: i.Hi<<n | i.Lo>>(64-n), Endianness: i.Endianness}
+}
+
+// Rsh returns u>>n.
+func (i Uint128) Rsh(n uint) Uint128 {
+	if n > 64 {
+		return Uint128{Lo: i.Hi >> (n - 64), Hi: 0, Endianness: i.Endianness}
+	}
+	return Uint128{Lo: i.Lo>>n | i.Hi<<(64-n), Hi: i.Hi >> n, Endianness: i.Endianness}
+}
+
+// LeadingZeros returns the number of leading zero bits in u.
+func (i Uint128) LeadingZeros() int {
+	if i.Hi > 0 {
+		return bits.LeadingZeros64(i.Hi)
+	}
+	return 64 + bits.LeadingZeros64(i.Lo)
+}
+
+// TrailingZeros returns the number of trailing zero bits in u.
+func (i Uint128) TrailingZeros() int {
+	if i.Lo > 0 {
+		return bits.TrailingZeros64(i.Lo)
+	}
+	return 64 + bits.TrailingZeros64(i.Hi)
+}
+
+// OnesCount returns the number of one bits in u.
+func (i Uint128) OnesCount() int {
+	return bits.OnesCount64(i.Hi) + bits.OnesCount64(i.Lo)
+}
+
+// RotateLeft returns u rotated left by (k mod 128) bits.
+func (i Uint128) RotateLeft(k int) Uint128 {
+	const n = 128
+	s := uint(k) & (n - 1)
+	return i.Lsh(s).Or(i.Rsh(n - s))
+}
+
+// RotateRight returns u rotated right by (k mod 128) bits.
+func (i Uint128) RotateRight(k int) Uint128 {
+	return i.RotateLeft(-k)
 }
 
 func (i Uint128) getByteOrder() binary.ByteOrder {
