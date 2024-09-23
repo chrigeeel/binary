@@ -18,7 +18,6 @@
 package bin
 
 import (
-	"encoding/binary"
 	"reflect"
 	"strings"
 )
@@ -26,7 +25,6 @@ import (
 type fieldTag struct {
 	SizeOf          string
 	Skip            bool
-	Order           binary.ByteOrder
 	Option          bool
 	COption         bool
 	BinaryExtension bool
@@ -44,18 +42,14 @@ func isIn(s string, candidates ...string) bool {
 }
 
 func parseFieldTag(tag reflect.StructTag) *fieldTag {
-	t := &fieldTag{
-		Order: defaultByteOrder,
-	}
+	t := &fieldTag{}
 	tagStr := tag.Get("bin")
 	for _, s := range strings.Split(tagStr, " ") {
 		if strings.HasPrefix(s, "sizeof=") {
 			tmp := strings.SplitN(s, "=", 2)
 			t.SizeOf = tmp[1]
 		} else if s == "big" {
-			t.Order = binary.BigEndian
 		} else if s == "little" {
-			t.Order = binary.LittleEndian
 		} else if isIn(s, "optional", "option") {
 			t.Option = true
 		} else if isIn(s, "coption") {

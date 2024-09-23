@@ -20,7 +20,6 @@ package bin
 import (
 	"fmt"
 
-	"github.com/streamingfast/logging"
 	"go.uber.org/zap"
 )
 
@@ -30,9 +29,9 @@ var (
 )
 
 func init() {
-	zlog_, tracer := logging.PackageLogger("binary", "github.com/gagliardetto/binary")
-	traceEnabled = tracer.Enabled()
-	zlog = zlog_
+	//zlog_, tracer := logging.PackageLogger("binary", "github.com/gagliardetto/binary")
+	//traceEnabled = tracer.Enabled()
+	//zlog = zlog_
 }
 
 type logStringerFunc func() string

@@ -1133,7 +1133,7 @@ func (e CustomEncoding) MarshalWithEncoder(encoder *Encoder) error {
 }
 
 func (e *CustomEncoding) UnmarshalWithDecoder(decoder *Decoder) (err error) {
-	if e.Value, err = decoder.ReadUint32(LE); err != nil {
+	if e.Value, err = decoder.ReadUint32(); err != nil {
 		return err
 	}
 	if e.Prefix, err = decoder.ReadByte(); err != nil {
