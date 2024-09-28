@@ -30,7 +30,7 @@ func (e *Example) UnmarshalWithDecoder(decoder *Decoder) (err error) {
 	if e.Prefix, err = decoder.ReadByte(); err != nil {
 		return err
 	}
-	if e.Value, err = decoder.ReadUint32(BE); err != nil {
+	if e.Value, err = decoder.ReadUint32(); err != nil {
 		return err
 	}
 	return nil
@@ -40,7 +40,7 @@ func (e Example) MarshalWithEncoder(encoder *Encoder) error {
 	if err := encoder.WriteByte(e.Prefix); err != nil {
 		return err
 	}
-	return encoder.WriteUint32(e.Value, BE)
+	return encoder.WriteUint32(e.Value)
 }
 
 type testCustomCoder struct {
@@ -64,7 +64,7 @@ func TestMarshalWithEncoder(t *testing.T) {
 		enc.Encode(e)
 
 		assert.Equal(t, []byte{
-			0xaa, 0x00, 0x00, 0x00, 0x48,
+			0xaa, 0x48, 0x00, 0x00, 0x00,
 		}, buf.Bytes())
 	}
 	{
@@ -112,7 +112,7 @@ func TestMarshalWithEncoder(t *testing.T) {
 func TestUnmarshalWithDecoder(t *testing.T) {
 	{
 		buf := []byte{
-			0xaa, 0x00, 0x00, 0x00, 0x48,
+			0xaa, 0x48, 0x00, 0x00, 0x00,
 		}
 
 		e := &Example{}
@@ -125,7 +125,7 @@ func TestUnmarshalWithDecoder(t *testing.T) {
 	{
 		{
 			buf := []byte{
-				0xaa, 0x00, 0x00, 0x00, 0x48,
+				0xaa, 0x48, 0x00, 0x00, 0x00,
 			}
 
 			e := &testCustomCoder{}
@@ -137,7 +137,7 @@ func TestUnmarshalWithDecoder(t *testing.T) {
 		}
 		{
 			buf := []byte{
-				0xaa, 0x00, 0x00, 0x00, 0x48,
+				0xaa, 0x48, 0x00, 0x00, 0x00,
 			}
 
 			e := &testCustomCoder{}

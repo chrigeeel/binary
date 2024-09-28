@@ -31,6 +31,10 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	LE = binary.LittleEndian
+)
+
 var TypeSize = struct {
 	Bool int
 	Byte int
@@ -258,7 +262,7 @@ func (dec *Decoder) ReadLength() (length int, err error) {
 		}
 		length = int(val)
 	case EncodingBorsh:
-		val, err := dec.ReadUint32(LE)
+		val, err := dec.ReadUint32()
 		if err != nil {
 			return 0, err
 		}
@@ -391,7 +395,7 @@ func (dec *Decoder) ReadOption() (out bool, err error) {
 }
 
 func (dec *Decoder) ReadCOption() (out bool, err error) {
-	b, err := dec.ReadUint32(LE)
+	b, err := dec.ReadUint32()
 	if err != nil {
 		return false, fmt.Errorf("decode: read c-option, %w", err)
 	}
@@ -450,13 +454,13 @@ func (dec *Decoder) ReadInt8() (out int8, err error) {
 	return
 }
 
-func (dec *Decoder) ReadUint16(order binary.ByteOrder) (out uint16, err error) {
+func (dec *Decoder) ReadUint16() (out uint16, err error) {
 	if dec.Remaining() < TypeSize.Uint16 {
 		err = fmt.Errorf("uint16 required [%d] bytes, remaining [%d]", TypeSize.Uint16, dec.Remaining())
 		return
 	}
 
-	out = order.Uint16(dec.data[dec.pos:])
+	out = LE.Uint16(dec.data[dec.pos:])
 	dec.pos += TypeSize.Uint16
 	if traceEnabled {
 		zlog.Debug("decode: read uint16", zap.Uint16("val", out))
@@ -464,8 +468,8 @@ func (dec *Decoder) ReadUint16(order binary.ByteOrder) (out uint16, err error) {
 	return
 }
 
-func (dec *Decoder) ReadInt16(order binary.ByteOrder) (out int16, err error) {
-	n, err := dec.ReadUint16(order)
+func (dec *Decoder) ReadInt16() (out int16, err error) {
+	n, err := dec.ReadUint16()
 	out = int16(n)
 	if traceEnabled {
 		zlog.Debug("decode: read int16", zap.Int16("val", out))
@@ -473,13 +477,13 @@ func (dec *Decoder) ReadInt16(order binary.ByteOrder) (out int16, err error) {
 	return
 }
 
-func (dec *Decoder) ReadUint32(order binary.ByteOrder) (out uint32, err error) {
+func (dec *Decoder) ReadUint32() (out uint32, err error) {
 	if dec.Remaining() < TypeSize.Uint32 {
 		err = fmt.Errorf("uint32 required [%d] bytes, remaining [%d]", TypeSize.Uint32, dec.Remaining())
 		return
 	}
 
-	out = order.Uint32(dec.data[dec.pos:])
+	out = LE.Uint32(dec.data[dec.pos:])
 	dec.pos += TypeSize.Uint32
 	if traceEnabled {
 		zlog.Debug("decode: read uint32", zap.Uint32("val", out))
@@ -487,8 +491,8 @@ func (dec *Decoder) ReadUint32(order binary.ByteOrder) (out uint32, err error) {
 	return
 }
 
-func (dec *Decoder) ReadInt32(order binary.ByteOrder) (out int32, err error) {
-	n, err := dec.ReadUint32(order)
+func (dec *Decoder) ReadInt32() (out int32, err error) {
+	n, err := dec.ReadUint32()
 	out = int32(n)
 	if traceEnabled {
 		zlog.Debug("decode: read int32", zap.Int32("val", out))
@@ -496,7 +500,7 @@ func (dec *Decoder) ReadInt32(order binary.ByteOrder) (out int32, err error) {
 	return
 }
 
-func (dec *Decoder) ReadUint64(order binary.ByteOrder) (out uint64, err error) {
+func (dec *Decoder) ReadUint64() (out uint64, err error) {
 	if dec.Remaining() < TypeSize.Uint64 {
 		err = fmt.Errorf("decode: uint64 required [%d] bytes, remaining [%d]", TypeSize.Uint64, dec.Remaining())
 		return
@@ -506,15 +510,15 @@ func (dec *Decoder) ReadUint64(order binary.ByteOrder) (out uint64, err error) {
 	if err != nil {
 		return 0, err
 	}
-	out = order.Uint64(data)
+	out = LE.Uint64(data)
 	if traceEnabled {
 		zlog.Debug("decode: read uint64", zap.Uint64("val", out), zap.Stringer("hex", HexBytes(data)))
 	}
 	return
 }
 
-func (dec *Decoder) ReadInt64(order binary.ByteOrder) (out int64, err error) {
-	n, err := dec.ReadUint64(order)
+func (dec *Decoder) ReadInt64() (out int64, err error) {
+	n, err := dec.ReadUint64()
 	out = int64(n)
 	if traceEnabled {
 		zlog.Debug("decode: read int64", zap.Int64("val", out))
@@ -522,7 +526,7 @@ func (dec *Decoder) ReadInt64(order binary.ByteOrder) (out int64, err error) {
 	return
 }
 
-func (dec *Decoder) ReadUint128(order binary.ByteOrder) (out Uint128, err error) {
+func (dec *Decoder) ReadUint128() (out Uint128, err error) {
 	if dec.Remaining() < TypeSize.Uint128 {
 		err = fmt.Errorf("uint128 required [%d] bytes, remaining [%d]", TypeSize.Uint128, dec.Remaining())
 		return
@@ -530,37 +534,23 @@ func (dec *Decoder) ReadUint128(order binary.ByteOrder) (out Uint128, err error)
 
 	data := dec.data[dec.pos : dec.pos+TypeSize.Uint128]
 
-	if order == binary.LittleEndian {
-		out.Hi = order.Uint64(data[8:])
-		out.Lo = order.Uint64(data[:8])
-	} else {
-		// TODO: is this correct?
-		out.Hi = order.Uint64(data[:8])
-		out.Lo = order.Uint64(data[8:])
-	}
+	out[1] = LE.Uint64(data[8:])
+	out[0] = LE.Uint64(data[:8])
 
 	dec.pos += TypeSize.Uint128
 	if traceEnabled {
-		zlog.Debug("decode: read uint128", zap.Stringer("hex", out), zap.Uint64("hi", out.Hi), zap.Uint64("lo", out.Lo))
+		zlog.Debug("decode: read uint128", zap.Stringer("hex", &out), zap.Uint64("hi", out[1]), zap.Uint64("lo", out[0]))
 	}
 	return
 }
 
-func (dec *Decoder) ReadInt128(order binary.ByteOrder) (out Int128, err error) {
-	v, err := dec.ReadUint128(order)
-	if err != nil {
-		return
-	}
-	return Int128(v), nil
-}
-
-func (dec *Decoder) ReadFloat32(order binary.ByteOrder) (out float32, err error) {
+func (dec *Decoder) ReadFloat32() (out float32, err error) {
 	if dec.Remaining() < TypeSize.Float32 {
 		err = fmt.Errorf("float32 required [%d] bytes, remaining [%d]", TypeSize.Float32, dec.Remaining())
 		return
 	}
 
-	n := order.Uint32(dec.data[dec.pos:])
+	n := LE.Uint32(dec.data[dec.pos:])
 	out = math.Float32frombits(n)
 	dec.pos += TypeSize.Float32
 	if traceEnabled {
@@ -575,13 +565,13 @@ func (dec *Decoder) ReadFloat32(order binary.ByteOrder) (out float32, err error)
 	return
 }
 
-func (dec *Decoder) ReadFloat64(order binary.ByteOrder) (out float64, err error) {
+func (dec *Decoder) ReadFloat64() (out float64, err error) {
 	if dec.Remaining() < TypeSize.Float64 {
 		err = fmt.Errorf("float64 required [%d] bytes, remaining [%d]", TypeSize.Float64, dec.Remaining())
 		return
 	}
 
-	n := order.Uint64(dec.data[dec.pos:])
+	n := LE.Uint64(dec.data[dec.pos:])
 	out = math.Float64frombits(n)
 	dec.pos += TypeSize.Float64
 	if traceEnabled {
@@ -593,14 +583,6 @@ func (dec *Decoder) ReadFloat64(order binary.ByteOrder) (out float64, err error)
 		}
 	}
 	return
-}
-
-func (dec *Decoder) ReadFloat128(order binary.ByteOrder) (out Float128, err error) {
-	value, err := dec.ReadUint128(order)
-	if err != nil {
-		return out, fmt.Errorf("float128: %s", err)
-	}
-	return Float128(value), nil
 }
 
 func (dec *Decoder) SafeReadUTF8String() (out string, err error) {
@@ -629,7 +611,7 @@ func (dec *Decoder) ReadString() (out string, err error) {
 }
 
 func (dec *Decoder) ReadRustString() (out string, err error) {
-	length, err := dec.ReadUint64(binary.LittleEndian)
+	length, err := dec.ReadUint64()
 	if err != nil {
 		return "", err
 	}
@@ -794,10 +776,10 @@ func reflect_readArrayOfBytes(d *Decoder, l int, rv reflect.Value) error {
 	return nil
 }
 
-func reflect_readArrayOfUint16(d *Decoder, l int, rv reflect.Value, order binary.ByteOrder) error {
+func reflect_readArrayOfUint16(d *Decoder, l int, rv reflect.Value) error {
 	buf := make([]uint16, l)
 	for i := 0; i < l; i++ {
-		n, err := d.ReadUint16(order)
+		n, err := d.ReadUint16()
 		if err != nil {
 			return err
 		}
@@ -833,10 +815,10 @@ func reflect_readArrayOfUint16(d *Decoder, l int, rv reflect.Value, order binary
 	return nil
 }
 
-func reflect_readArrayOfUint32(d *Decoder, l int, rv reflect.Value, order binary.ByteOrder) error {
+func reflect_readArrayOfUint32(d *Decoder, l int, rv reflect.Value) error {
 	buf := make([]uint32, l)
 	for i := 0; i < l; i++ {
-		n, err := d.ReadUint32(order)
+		n, err := d.ReadUint32()
 		if err != nil {
 			return err
 		}
@@ -886,10 +868,10 @@ var (
 	typeOfUint64 = reflect.TypeOf(uint64(0))
 )
 
-func reflect_readArrayOfUint64(d *Decoder, l int, rv reflect.Value, order binary.ByteOrder) error {
+func reflect_readArrayOfUint64(d *Decoder, l int, rv reflect.Value) error {
 	buf := make([]uint64, l)
 	for i := 0; i < l; i++ {
-		n, err := d.ReadUint64(order)
+		n, err := d.ReadUint64()
 		if err != nil {
 			return err
 		}
@@ -926,7 +908,7 @@ func reflect_readArrayOfUint64(d *Decoder, l int, rv reflect.Value, order binary
 }
 
 // reflect_readArrayOfUint_ is used for reading arrays/slices of uints of any size.
-func reflect_readArrayOfUint_(d *Decoder, l int, k reflect.Kind, rv reflect.Value, order binary.ByteOrder) error {
+func reflect_readArrayOfUint_(d *Decoder, l int, k reflect.Kind, rv reflect.Value) error {
 	switch k {
 	// case reflect.Uint:
 	// 	// switch on system architecture (32 or 64 bit)
@@ -943,17 +925,17 @@ func reflect_readArrayOfUint_(d *Decoder, l int, k reflect.Kind, rv reflect.Valu
 		if l*2 > d.Remaining() {
 			return io.ErrUnexpectedEOF
 		}
-		return reflect_readArrayOfUint16(d, l, rv, order)
+		return reflect_readArrayOfUint16(d, l, rv)
 	case reflect.Uint32:
 		if l*4 > d.Remaining() {
 			return io.ErrUnexpectedEOF
 		}
-		return reflect_readArrayOfUint32(d, l, rv, order)
+		return reflect_readArrayOfUint32(d, l, rv)
 	case reflect.Uint64:
 		if l*8 > d.Remaining() {
 			return io.ErrUnexpectedEOF
 		}
-		return reflect_readArrayOfUint64(d, l, rv, order)
+		return reflect_readArrayOfUint64(d, l, rv)
 	default:
 		return fmt.Errorf("unsupported kind: %v", k)
 	}

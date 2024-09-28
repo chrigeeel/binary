@@ -105,42 +105,42 @@ func (dec *Decoder) decodeCompactU16(rv reflect.Value, opt *option) (err error) 
 		return
 	case reflect.Int16:
 		var n int16
-		n, err = dec.ReadInt16(opt.Order)
+		n, err = dec.ReadInt16()
 		rv.SetInt(int64(n))
 		return
 	case reflect.Int32:
 		var n int32
-		n, err = dec.ReadInt32(opt.Order)
+		n, err = dec.ReadInt32()
 		rv.SetInt(int64(n))
 		return
 	case reflect.Int64:
 		var n int64
-		n, err = dec.ReadInt64(opt.Order)
+		n, err = dec.ReadInt64()
 		rv.SetInt(int64(n))
 		return
 	case reflect.Uint16:
 		var n uint16
-		n, err = dec.ReadUint16(opt.Order)
+		n, err = dec.ReadUint16()
 		rv.SetUint(uint64(n))
 		return
 	case reflect.Uint32:
 		var n uint32
-		n, err = dec.ReadUint32(opt.Order)
+		n, err = dec.ReadUint32()
 		rv.SetUint(uint64(n))
 		return
 	case reflect.Uint64:
 		var n uint64
-		n, err = dec.ReadUint64(opt.Order)
+		n, err = dec.ReadUint64()
 		rv.SetUint(n)
 		return
 	case reflect.Float32:
 		var n float32
-		n, err = dec.ReadFloat32(opt.Order)
+		n, err = dec.ReadFloat32()
 		rv.SetFloat(float64(n))
 		return
 	case reflect.Float64:
 		var n float64
-		n, err = dec.ReadFloat64(opt.Order)
+		n, err = dec.ReadFloat64()
 		rv.SetFloat(n)
 		return
 	case reflect.Bool:
@@ -161,7 +161,7 @@ func (dec *Decoder) decodeCompactU16(rv reflect.Value, opt *option) (err error) 
 
 		switch k := rv.Type().Elem().Kind(); k {
 		case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			if err := reflect_readArrayOfUint_(dec, l, k, rv, LE); err != nil {
+			if err := reflect_readArrayOfUint_(dec, l, k, rv); err != nil {
 				return err
 			}
 		default:
@@ -194,7 +194,7 @@ func (dec *Decoder) decodeCompactU16(rv reflect.Value, opt *option) (err error) 
 
 		switch k := rv.Type().Elem().Kind(); k {
 		case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			if err := reflect_readArrayOfUint_(dec, l, k, rv, LE); err != nil {
+			if err := reflect_readArrayOfUint_(dec, l, k, rv); err != nil {
 				return err
 			}
 		default:
@@ -316,7 +316,6 @@ func (dec *Decoder) decodeStructCompactU16(rt reflect.Type, rv reflect.Value) (e
 
 		option := &option{
 			is_OptionalField: fieldTag.Option,
-			Order:            fieldTag.Order,
 		}
 
 		if s, ok := sizeOfMap[structField.Name]; ok {

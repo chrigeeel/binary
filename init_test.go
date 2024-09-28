@@ -41,8 +41,8 @@ type binaryTestStruct struct {
 	F16 Uint64
 	F17 JSONFloat64
 	F18 Uint128
-	F19 Int128
-	F20 Float128
+	F19 Uint128
+	F20 Uint128
 	F21 Varuint32
 	F22 Varint32
 	F23 Bool

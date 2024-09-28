@@ -40,21 +40,21 @@ func (e *Encoder) encodePrimitive(rv reflect.Value, opt *option) (isPrimitive bo
 	case reflect.Int8:
 		err = e.WriteByte(byte(rv.Int()))
 	case reflect.Int16:
-		err = e.WriteInt16(int16(rv.Int()), LE)
+		err = e.WriteInt16(int16(rv.Int()))
 	case reflect.Uint16:
-		err = e.WriteUint16(uint16(rv.Uint()), LE)
+		err = e.WriteUint16(uint16(rv.Uint()))
 	case reflect.Int32:
-		err = e.WriteInt32(int32(rv.Int()), LE)
+		err = e.WriteInt32(int32(rv.Int()))
 	case reflect.Uint32:
-		err = e.WriteUint32(uint32(rv.Uint()), LE)
+		err = e.WriteUint32(uint32(rv.Uint()))
 	case reflect.Uint64:
-		err = e.WriteUint64(rv.Uint(), LE)
+		err = e.WriteUint64(rv.Uint())
 	case reflect.Int64:
-		err = e.WriteInt64(rv.Int(), LE)
+		err = e.WriteInt64(rv.Int())
 	case reflect.Float32:
-		err = e.WriteFloat32(float32(rv.Float()), LE)
+		err = e.WriteFloat32(float32(rv.Float()))
 	case reflect.Float64:
-		err = e.WriteFloat64(rv.Float(), LE)
+		err = e.WriteFloat64(rv.Float())
 	case reflect.Bool:
 		err = e.WriteBool(rv.Bool())
 	default:
@@ -156,7 +156,7 @@ func (e *Encoder) encodeBorsh(rv reflect.Value, opt *option) (err error) {
 		switch k := rv.Type().Elem().Kind(); k {
 		case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			// if it's a [n]byte, accumulate and write in one command:
-			if err := reflect_writeArrayOfUint_(e, l, k, rv, LE); err != nil {
+			if err := reflect_writeArrayOfUint_(e, l, k, rv); err != nil {
 				return err
 			}
 		default:
@@ -175,7 +175,7 @@ func (e *Encoder) encodeBorsh(rv reflect.Value, opt *option) (err error) {
 			}
 		} else {
 			l = rv.Len()
-			if err = e.WriteUint32(uint32(l), LE); err != nil {
+			if err = e.WriteUint32(uint32(l)); err != nil {
 				return
 			}
 		}
@@ -190,7 +190,7 @@ func (e *Encoder) encodeBorsh(rv reflect.Value, opt *option) (err error) {
 		switch k := rv.Type().Elem().Kind(); k {
 		case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			// if it's a [n]byte, accumulate and write in one command:
-			if err := reflect_writeArrayOfUint_(e, l, k, rv, LE); err != nil {
+			if err := reflect_writeArrayOfUint_(e, l, k, rv); err != nil {
 				return err
 			}
 		default:
@@ -221,7 +221,7 @@ func (e *Encoder) encodeBorsh(rv reflect.Value, opt *option) (err error) {
 			zlog = zlog.Named("struct")
 		}
 
-		if err = e.WriteUint32(uint32(keyCount), LE); err != nil {
+		if err = e.WriteUint32(uint32(keyCount)); err != nil {
 			return
 		}
 
@@ -343,7 +343,6 @@ func (e *Encoder) encodeStructBorsh(rt reflect.Type, rv reflect.Value) (err erro
 		option := &option{
 			is_OptionalField:  fieldTag.Option,
 			is_COptionalField: fieldTag.COption,
-			Order:             fieldTag.Order,
 		}
 
 		if s, ok := sizeOfMap[structField.Name]; ok {

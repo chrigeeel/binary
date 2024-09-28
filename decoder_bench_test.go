@@ -8,7 +8,7 @@ import (
 func newUint64SliceEncoded(l int) []byte {
 	buf := make([]byte, 0)
 	for i := 0; i < l; i++ {
-		buf = append(buf, uint64ToBytes(uint64(i), LE)...)
+		buf = append(buf, uint64ToBytes(uint64(i))...)
 	}
 	return buf
 }
@@ -17,7 +17,7 @@ func Benchmark_uintSlice64_Decode_noMake(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -41,7 +41,7 @@ func Benchmark_uintSlice64_Decode_make(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -66,7 +66,7 @@ func Benchmark_uintSlice64_Decode_field_noMake(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -93,7 +93,7 @@ func Benchmark_uintSlice64_Decode_field_make(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -132,7 +132,7 @@ func Benchmark_uintSlice64_readArray_noMake(b *testing.B) {
 		rv := reflect.ValueOf(&got).Elem()
 		k := rv.Type().Elem().Kind()
 
-		err := reflect_readArrayOfUint_(decoder, len(buf)/8, k, rv, LE)
+		err := reflect_readArrayOfUint_(decoder, len(buf)/8, k, rv)
 		if err != nil {
 			b.Error(err)
 		}
@@ -157,7 +157,7 @@ func Benchmark_uintSlice64_readArray_make(b *testing.B) {
 		rv := reflect.ValueOf(&got).Elem()
 		k := rv.Type().Elem().Kind()
 
-		err := reflect_readArrayOfUint_(decoder, len(buf)/8, k, rv, LE)
+		err := reflect_readArrayOfUint_(decoder, len(buf)/8, k, rv)
 		if err != nil {
 			b.Error(err)
 		}
@@ -172,14 +172,14 @@ type sliceUint64WithCustomDecoder []uint64
 // UnmarshalWithDecoder
 func (s *sliceUint64WithCustomDecoder) UnmarshalWithDecoder(decoder *Decoder) error {
 	// read length
-	l, err := decoder.ReadUint32(LE)
+	l, err := decoder.ReadUint32()
 	if err != nil {
 		return err
 	}
 	// read data
 	*s = make([]uint64, l)
 	for i := 0; i < int(l); i++ {
-		(*s)[i], err = decoder.ReadUint64(LE)
+		(*s)[i], err = decoder.ReadUint64()
 		if err != nil {
 			return err
 		}
@@ -191,7 +191,7 @@ func Benchmark_uintSlice64_Decode_field_withCustomDecoder(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -215,7 +215,7 @@ func Benchmark_uintSlice64_Decode_field_withCustomDecoder(b *testing.B) {
 func newUint32SliceEncoded(l int) []byte {
 	buf := make([]byte, 0)
 	for i := 0; i < l; i++ {
-		buf = append(buf, uint32ToBytes(uint32(i), LE)...)
+		buf = append(buf, uint32ToBytes(uint32(i))...)
 	}
 	return buf
 }
@@ -224,7 +224,7 @@ func Benchmark_uintSlice32_Decode_noMake(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)
@@ -248,7 +248,7 @@ func Benchmark_uintSlice32_Decode_make(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)
@@ -273,7 +273,7 @@ func Benchmark_uintSlice32_Decode_field_noMake(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)
@@ -300,7 +300,7 @@ func Benchmark_uintSlice32_Decode_field_make(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)
@@ -339,7 +339,7 @@ func Benchmark_uintSlice32_readArray_noMake(b *testing.B) {
 		rv := reflect.ValueOf(&got).Elem()
 		k := rv.Type().Elem().Kind()
 
-		err := reflect_readArrayOfUint_(decoder, len(buf)/4, k, rv, LE)
+		err := reflect_readArrayOfUint_(decoder, len(buf)/4, k, rv)
 		if err != nil {
 			b.Error(err)
 		}
@@ -364,7 +364,7 @@ func Benchmark_uintSlice32_readArray_make(b *testing.B) {
 		rv := reflect.ValueOf(&got).Elem()
 		k := rv.Type().Elem().Kind()
 
-		err := reflect_readArrayOfUint_(decoder, len(buf)/4, k, rv, LE)
+		err := reflect_readArrayOfUint_(decoder, len(buf)/4, k, rv)
 		if err != nil {
 			b.Error(err)
 		}
@@ -379,14 +379,14 @@ type sliceUint32WithCustomDecoder []uint32
 // UnmarshalWithDecoder
 func (s *sliceUint32WithCustomDecoder) UnmarshalWithDecoder(decoder *Decoder) error {
 	// read length
-	l, err := decoder.ReadUint32(LE)
+	l, err := decoder.ReadUint32()
 	if err != nil {
 		return err
 	}
 	// read data
 	*s = make([]uint32, l)
 	for i := 0; i < int(l); i++ {
-		(*s)[i], err = decoder.ReadUint32(LE)
+		(*s)[i], err = decoder.ReadUint32()
 		if err != nil {
 			return err
 		}
@@ -397,7 +397,7 @@ func Benchmark_uintSlice32_Decode_field_withCustomDecoder(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)

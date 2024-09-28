@@ -71,21 +71,21 @@ func (e *Encoder) encodeCompactU16(rv reflect.Value, opt *option) (err error) {
 	case reflect.Int8:
 		return e.WriteByte(byte(rv.Int()))
 	case reflect.Int16:
-		return e.WriteInt16(int16(rv.Int()), opt.Order)
+		return e.WriteInt16(int16(rv.Int()))
 	case reflect.Uint16:
-		return e.WriteUint16(uint16(rv.Uint()), opt.Order)
+		return e.WriteUint16(uint16(rv.Uint()))
 	case reflect.Int32:
-		return e.WriteInt32(int32(rv.Int()), opt.Order)
+		return e.WriteInt32(int32(rv.Int()))
 	case reflect.Uint32:
-		return e.WriteUint32(uint32(rv.Uint()), opt.Order)
+		return e.WriteUint32(uint32(rv.Uint()))
 	case reflect.Uint64:
-		return e.WriteUint64(rv.Uint(), opt.Order)
+		return e.WriteUint64(rv.Uint())
 	case reflect.Int64:
-		return e.WriteInt64(rv.Int(), opt.Order)
+		return e.WriteInt64(rv.Int())
 	case reflect.Float32:
-		return e.WriteFloat32(float32(rv.Float()), opt.Order)
+		return e.WriteFloat32(float32(rv.Float()))
 	case reflect.Float64:
-		return e.WriteFloat64(rv.Float(), opt.Order)
+		return e.WriteFloat64(rv.Float())
 	case reflect.Bool:
 		return e.WriteBool(rv.Bool())
 	case reflect.Ptr:
@@ -109,7 +109,7 @@ func (e *Encoder) encodeCompactU16(rv reflect.Value, opt *option) (err error) {
 		switch k := rv.Type().Elem().Kind(); k {
 		case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			// if it's a [n]byte, accumulate and write in one command:
-			if err := reflect_writeArrayOfUint_(e, l, k, rv, LE); err != nil {
+			if err := reflect_writeArrayOfUint_(e, l, k, rv); err != nil {
 				return err
 			}
 		default:
@@ -143,7 +143,7 @@ func (e *Encoder) encodeCompactU16(rv reflect.Value, opt *option) (err error) {
 		switch k := rv.Type().Elem().Kind(); k {
 		case reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 			// if it's a [n]byte, accumulate and write in one command:
-			if err := reflect_writeArrayOfUint_(e, l, k, rv, LE); err != nil {
+			if err := reflect_writeArrayOfUint_(e, l, k, rv); err != nil {
 				return err
 			}
 		default:
@@ -236,7 +236,6 @@ func (e *Encoder) encodeStructCompactU16(rt reflect.Type, rv reflect.Value) (err
 
 		option := &option{
 			is_OptionalField: fieldTag.Option,
-			Order:            fieldTag.Order,
 		}
 
 		if s, ok := sizeOfMap[structField.Name]; ok {

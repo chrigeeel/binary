@@ -62,7 +62,7 @@ func (vid TypeID) Uvarint32() uint32 {
 
 // Uint32 parses the TypeID to a uint32.
 func (vid TypeID) Uint32() uint32 {
-	return Uint32FromTypeID(vid, binary.LittleEndian)
+	return Uint32FromTypeID(vid)
 }
 
 // Uint8 parses the TypeID to a Uint8.
@@ -97,9 +97,9 @@ func TypeIDFromUvarint32(v uint32) TypeID {
 }
 
 // TypeIDFromUint32 converts a uint32 to a TypeID.
-func TypeIDFromUint32(v uint32, bo binary.ByteOrder) TypeID {
+func TypeIDFromUint32(v uint32) TypeID {
 	out := make([]byte, TypeSize.Uint32)
-	bo.PutUint32(out, v)
+	LE.PutUint32(out, v)
 	return TypeIDFromBytes(out)
 }
 
@@ -116,8 +116,8 @@ func Uvarint32FromTypeID(vid TypeID) (out uint32) {
 }
 
 // Uint32FromTypeID parses a TypeID bytes to a uint32.
-func Uint32FromTypeID(vid TypeID, order binary.ByteOrder) (out uint32) {
-	out = order.Uint32(vid[:])
+func Uint32FromTypeID(vid TypeID) (out uint32) {
+	out = LE.Uint32(vid[:])
 	return out
 }
 
@@ -180,7 +180,7 @@ func NewVariantDefinition(typeIDEncoding TypeIDEncoding, types []VariantType) (o
 		}
 	case Uint32TypeIDEncoding:
 		for i, typeDef := range types {
-			typeID := TypeIDFromUint32(uint32(i), binary.LittleEndian)
+			typeID := TypeIDFromUint32(uint32(i))
 
 			// FIXME: Check how the reflect.Type is used and cache all its usage in the definition.
 			//        Right now, on each Unmarshal, we re-compute some expensive stuff that can be
@@ -288,11 +288,11 @@ func (a *BaseVariant) UnmarshalBinaryVariant(decoder *Decoder, def *VariantDefin
 		}
 		typeID = TypeIDFromUvarint32(val)
 	case Uint32TypeIDEncoding:
-		val, err := decoder.ReadUint32(binary.LittleEndian)
+		val, err := decoder.ReadUint32()
 		if err != nil {
 			return fmt.Errorf("uint32: unable to read variant type id: %s", err)
 		}
-		typeID = TypeIDFromUint32(val, binary.LittleEndian)
+		typeID = TypeIDFromUint32(val)
 	case Uint8TypeIDEncoding:
 		id, err := decoder.ReadUint8()
 		if err != nil {

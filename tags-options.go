@@ -17,26 +17,15 @@
 
 package bin
 
-import "encoding/binary"
-
 type option struct {
 	is_OptionalField  bool
 	is_COptionalField bool
 	SizeOfSlice       *int
-	Order             binary.ByteOrder
 }
-
-var (
-	LE binary.ByteOrder = binary.LittleEndian
-	BE binary.ByteOrder = binary.BigEndian
-)
-
-var defaultByteOrder = binary.LittleEndian
 
 func newDefaultOption() *option {
 	return &option{
 		is_OptionalField: false,
-		Order:            defaultByteOrder,
 	}
 }
 
@@ -45,7 +34,6 @@ func (o *option) clone() *option {
 		is_OptionalField:  o.is_OptionalField,
 		is_COptionalField: o.is_COptionalField,
 		SizeOfSlice:       o.SizeOfSlice,
-		Order:             o.Order,
 	}
 	return out
 }

@@ -88,12 +88,12 @@ func TestDecoder_Remaining(t *testing.T) {
 
 	d := NewBinDecoder(b)
 
-	n, err := d.ReadUint16(LE)
+	n, err := d.ReadUint16()
 	assert.NoError(t, err)
 	assert.Equal(t, uint16(1), n)
 	assert.Equal(t, 2, d.Remaining())
 
-	n, err = d.ReadUint16(LE)
+	n, err = d.ReadUint16()
 	assert.NoError(t, err)
 	assert.Equal(t, uint16(2), n)
 	assert.Equal(t, 0, d.Remaining())
@@ -127,30 +127,12 @@ func TestDecoder_int16(t *testing.T) {
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadInt16(LE)
+	n, err := d.ReadInt16()
 	assert.NoError(t, err)
 	assert.Equal(t, int16(-82), n)
 	assert.Equal(t, 2, d.Remaining())
 
-	n, err = d.ReadInt16(LE)
-	assert.NoError(t, err)
-	assert.Equal(t, int16(73), n)
-	assert.Equal(t, 0, d.Remaining())
-
-	// big endian
-	buf = []byte{
-		0xff, 0xae, // -82
-		0x00, 0x49, // 73
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadInt16(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, int16(-82), n)
-	assert.Equal(t, 2, d.Remaining())
-
-	n, err = d.ReadInt16(BE)
+	n, err = d.ReadInt16()
 	assert.NoError(t, err)
 	assert.Equal(t, int16(73), n)
 	assert.Equal(t, 0, d.Remaining())
@@ -165,30 +147,12 @@ func TestDecoder_int32(t *testing.T) {
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadInt32(LE)
+	n, err := d.ReadInt32()
 	assert.NoError(t, err)
 	assert.Equal(t, int32(-276132392), n)
 	assert.Equal(t, 4, d.Remaining())
 
-	n, err = d.ReadInt32(LE)
-	assert.NoError(t, err)
-	assert.Equal(t, int32(237391), n)
-	assert.Equal(t, 0, d.Remaining())
-
-	// big endian
-	buf = []byte{
-		0xef, 0x8a, 0x8d, 0xd8, // -276132392
-		0x00, 0x3, 0x9f, 0x4f, // 237391
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadInt32(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, int32(-276132392), n)
-	assert.Equal(t, 4, d.Remaining())
-
-	n, err = d.ReadInt32(BE)
+	n, err = d.ReadInt32()
 	assert.NoError(t, err)
 	assert.Equal(t, int32(237391), n)
 	assert.Equal(t, 0, d.Remaining())
@@ -203,30 +167,12 @@ func TestDecoder_int64(t *testing.T) {
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadInt64(LE)
+	n, err := d.ReadInt64()
 	assert.NoError(t, err)
 	assert.Equal(t, int64(-819823), n)
 	assert.Equal(t, 8, d.Remaining())
 
-	n, err = d.ReadInt64(LE)
-	assert.NoError(t, err)
-	assert.Equal(t, int64(72931), n)
-	assert.Equal(t, 0, d.Remaining())
-
-	// big endian
-	buf = []byte{
-		0xff, 0xff, 0xff, 0xff, 0xff, 0xf3, 0x7d, 0x91, //-819823
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x1, 0x1c, 0xe3, //72931
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadInt64(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, int64(-819823), n)
-	assert.Equal(t, 8, d.Remaining())
-
-	n, err = d.ReadInt64(BE)
+	n, err = d.ReadInt64()
 	assert.NoError(t, err)
 	assert.Equal(t, int64(72931), n)
 	assert.Equal(t, 0, d.Remaining())
@@ -260,30 +206,12 @@ func TestDecoder_uint16(t *testing.T) {
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadUint16(LE)
+	n, err := d.ReadUint16()
 	assert.NoError(t, err)
 	assert.Equal(t, uint16(82), n)
 	assert.Equal(t, 2, d.Remaining())
 
-	n, err = d.ReadUint16(LE)
-	assert.NoError(t, err)
-	assert.Equal(t, uint16(73), n)
-	assert.Equal(t, 0, d.Remaining())
-
-	// big endian
-	buf = []byte{
-		0x00, 0x52, // 82
-		0x00, 0x49, // 73
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadUint16(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, uint16(82), n)
-	assert.Equal(t, 2, d.Remaining())
-
-	n, err = d.ReadUint16(BE)
+	n, err = d.ReadUint16()
 	assert.NoError(t, err)
 	assert.Equal(t, uint16(73), n)
 	assert.Equal(t, 0, d.Remaining())
@@ -292,36 +220,18 @@ func TestDecoder_uint16(t *testing.T) {
 func TestDecoder_uint32(t *testing.T) {
 	// little endian
 	buf := []byte{
-		0x28, 0x72, 0x75, 0x10, // 276132392 as LE
-		0x4f, 0x9f, 0x03, 0x00, // 237391 as LE
+		0x28, 0x72, 0x75, 0x10, // 276132392 as
+		0x4f, 0x9f, 0x03, 0x00, // 237391 as
 	}
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadUint32(LE)
+	n, err := d.ReadUint32()
 	assert.NoError(t, err)
 	assert.Equal(t, uint32(276132392), n)
 	assert.Equal(t, 4, d.Remaining())
 
-	n, err = d.ReadUint32(LE)
-	assert.NoError(t, err)
-	assert.Equal(t, uint32(237391), n)
-	assert.Equal(t, 0, d.Remaining())
-
-	// big endian
-	buf = []byte{
-		0x10, 0x75, 0x72, 0x28, // 276132392 as LE
-		0x00, 0x03, 0x9f, 0x4f, // 237391 as LE
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadUint32(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, uint32(276132392), n)
-	assert.Equal(t, 4, d.Remaining())
-
-	n, err = d.ReadUint32(BE)
+	n, err = d.ReadUint32()
 	assert.NoError(t, err)
 	assert.Equal(t, uint32(237391), n)
 	assert.Equal(t, 0, d.Remaining())
@@ -336,30 +246,12 @@ func TestDecoder_uint64(t *testing.T) {
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadUint64(LE)
+	n, err := d.ReadUint64()
 	assert.NoError(t, err)
 	assert.Equal(t, uint64(819823), n)
 	assert.Equal(t, 8, d.Remaining())
 
-	n, err = d.ReadUint64(LE)
-	assert.NoError(t, err)
-	assert.Equal(t, uint64(72931), n)
-	assert.Equal(t, 0, d.Remaining())
-
-	// big endian
-	buf = []byte{
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x82, 0x6f, //819823
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x1, 0x1c, 0xe3, //72931
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadUint64(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, uint64(819823), n)
-	assert.Equal(t, 8, d.Remaining())
-
-	n, err = d.ReadUint64(BE)
+	n, err = d.ReadUint64()
 	assert.NoError(t, err)
 	assert.Equal(t, uint64(72931), n)
 	assert.Equal(t, 0, d.Remaining())
@@ -374,30 +266,12 @@ func TestDecoder_float32(t *testing.T) {
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadFloat32(LE)
+	n, err := d.ReadFloat32()
 	assert.NoError(t, err)
 	assert.Equal(t, float32(1.32), n)
 	assert.Equal(t, 4, d.Remaining())
 
-	n, err = d.ReadFloat32(LE)
-	assert.NoError(t, err)
-	assert.Equal(t, float32(-3.21), n)
-	assert.Equal(t, 0, d.Remaining())
-
-	// big endian
-	buf = []byte{
-		0x3f, 0xa8, 0xf5, 0xc3,
-		0xc0, 0x4d, 0x70, 0xa4,
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadFloat32(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, float32(1.32), n)
-	assert.Equal(t, 4, d.Remaining())
-
-	n, err = d.ReadFloat32(BE)
+	n, err = d.ReadFloat32()
 	assert.NoError(t, err)
 	assert.Equal(t, float32(-3.21), n)
 	assert.Equal(t, 0, d.Remaining())
@@ -415,62 +289,27 @@ func TestDecoder_float64(t *testing.T) {
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadFloat64(LE)
+	n, err := d.ReadFloat64()
 	assert.NoError(t, err)
 	assert.Equal(t, float64(-62.23), n)
 	assert.Equal(t, 32, d.Remaining())
 
-	n, err = d.ReadFloat64(LE)
+	n, err = d.ReadFloat64()
 	assert.NoError(t, err)
 	assert.Equal(t, float64(23.239), n)
 	assert.Equal(t, 24, d.Remaining())
 
-	n, err = d.ReadFloat64(LE)
+	n, err = d.ReadFloat64()
 	assert.NoError(t, err)
 	assert.Equal(t, math.Inf(1), n)
 	assert.Equal(t, 16, d.Remaining())
 
-	n, err = d.ReadFloat64(LE)
+	n, err = d.ReadFloat64()
 	assert.NoError(t, err)
 	assert.Equal(t, math.Inf(-1), n)
 	assert.Equal(t, 8, d.Remaining())
 
-	n, err = d.ReadFloat64(LE)
-	assert.NoError(t, err)
-	assert.True(t, math.IsNaN(n))
-
-	// big endian
-	buf = []byte{
-		0xc0, 0x4f, 0x1d, 0x70, 0xa3, 0xd7, 0x0a, 0x3d,
-		0x40, 0x37, 0x3d, 0x2f, 0x1a, 0x9f, 0xbe, 0x77,
-		0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0xff, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0x7f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadFloat64(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, float64(-62.23), n)
-	assert.Equal(t, 32, d.Remaining())
-
-	n, err = d.ReadFloat64(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, float64(23.239), n)
-	assert.Equal(t, 24, d.Remaining())
-
-	n, err = d.ReadFloat64(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, math.Inf(1), n)
-	assert.Equal(t, 16, d.Remaining())
-
-	n, err = d.ReadFloat64(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, math.Inf(-1), n)
-	assert.Equal(t, 8, d.Remaining())
-
-	n, err = d.ReadFloat64(BE)
+	n, err = d.ReadFloat64()
 	assert.NoError(t, err)
 	assert.True(t, math.IsNaN(n))
 }
@@ -621,30 +460,12 @@ func TestDecoder_Int64(t *testing.T) {
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadInt64(LE)
+	n, err := d.ReadInt64()
 	assert.NoError(t, err)
 	assert.Equal(t, int64(-819823), n)
 	assert.Equal(t, 8, d.Remaining())
 
-	n, err = d.ReadInt64(LE)
-	assert.NoError(t, err)
-	assert.Equal(t, int64(72931), n)
-	assert.Equal(t, 0, d.Remaining())
-
-	// big endian
-	buf = []byte{
-		0xff, 0xff, 0xff, 0xff, 0xff, 0xf3, 0x7d, 0x91, //-819823
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x1, 0x1c, 0xe3, //72931
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadInt64(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, int64(-819823), n)
-	assert.Equal(t, 8, d.Remaining())
-
-	n, err = d.ReadInt64(BE)
+	n, err = d.ReadInt64()
 	assert.NoError(t, err)
 	assert.Equal(t, int64(72931), n)
 	assert.Equal(t, 0, d.Remaining())
@@ -659,21 +480,9 @@ func TestDecoder_Uint128_2(t *testing.T) {
 
 	d := NewBinDecoder(buf)
 
-	n, err := d.ReadUint128(LE)
+	n, err := d.ReadUint128()
 	assert.NoError(t, err)
-	assert.Equal(t, Uint128{Hi: 0xb6d, Lo: 0xffffffffffd3880d}, n)
-
-	buf = []byte{
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0xbb,
-		0xff, 0xff, 0xff, 0xff, 0xff, 0xac, 0xdc, 0xad,
-	}
-
-	d = NewBinDecoder(buf)
-
-	n, err = d.ReadUint128(BE)
-	assert.NoError(t, err)
-	assert.Equal(t, Uint128{Hi: 0x00000000000008bb, Lo: 0xffffffffffacdcad}, n)
-
+	assert.Equal(t, Uint128{0xffffffffffd3880d, 0xb6d}, n)
 }
 
 func TestDecoder_BinaryStruct(t *testing.T) {
@@ -702,16 +511,16 @@ func TestDecoder_BinaryStruct(t *testing.T) {
 	assert.Equal(t, Uint64(23), s.F16)
 	assert.Equal(t, JSONFloat64(3.14), s.F17)
 	assert.Equal(t, Uint128{
-		Lo: 10,
-		Hi: 82,
+		10,
+		82,
 	}, s.F18)
-	assert.Equal(t, Int128{
-		Lo: 7,
-		Hi: 3,
+	assert.Equal(t, Uint128{
+		7,
+		3,
 	}, s.F19)
-	assert.Equal(t, Float128{
-		Lo: 10,
-		Hi: 82,
+	assert.Equal(t, Uint128{
+		10,
+		82,
 	}, s.F20)
 	assert.Equal(t, Varuint32(999), s.F21)
 	assert.Equal(t, Varint32(-999), s.F22)
@@ -726,7 +535,7 @@ func TestDecoder_Decode_No_Ptr(t *testing.T) {
 }
 
 func TestDecoder_BinaryTestStructWithTags(t *testing.T) {
-	cnt, err := hex.DecodeString("ffb50063ffffff19000003e7ffffffffffffcc51000000000001869fc1b90a3d400f5c28f5c28f5c010000000000000000")
+	cnt, err := hex.DecodeString("b5ff630019ffffffe703000051ccffffffffffff9f860100000000003d0ab9c15c8fc2f5285c0f400100000000010000000263000000000000002100000000000000")
 	require.NoError(t, err)
 
 	s := &binaryTestStructWithTags{}
@@ -824,37 +633,37 @@ func Test_reflect_readArrayOfUint16(t *testing.T) {
 	{
 		{
 			buf := concatByteSlices(
-				uint16ToBytes(0, LE),
-				uint16ToBytes(1, LE),
-				uint16ToBytes(2, LE),
-				uint16ToBytes(3, LE),
-				uint16ToBytes(4, LE),
-				uint16ToBytes(5, LE),
-				uint16ToBytes(6, LE),
-				uint16ToBytes(7, LE),
+				uint16ToBytes(0),
+				uint16ToBytes(1),
+				uint16ToBytes(2),
+				uint16ToBytes(3),
+				uint16ToBytes(4),
+				uint16ToBytes(5),
+				uint16ToBytes(6),
+				uint16ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 
 			got := make([]uint16, 0)
-			err := reflect_readArrayOfUint16(decoder, len(buf)/2, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint16(decoder, len(buf)/2, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint16{0, 1, 2, 3, 4, 5, 6, 7}, got)
 		}
 		{
 			buf := concatByteSlices(
-				uint16ToBytes(0, LE),
-				uint16ToBytes(1, LE),
-				uint16ToBytes(2, LE),
-				uint16ToBytes(3, LE),
-				uint16ToBytes(4, LE),
-				uint16ToBytes(5, LE),
-				uint16ToBytes(6, LE),
-				uint16ToBytes(7, LE),
+				uint16ToBytes(0),
+				uint16ToBytes(1),
+				uint16ToBytes(2),
+				uint16ToBytes(3),
+				uint16ToBytes(4),
+				uint16ToBytes(5),
+				uint16ToBytes(6),
+				uint16ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 
 			got := [8]uint16{0, 0, 0, 0, 0, 0, 0, 0}
-			err := reflect_readArrayOfUint16(decoder, len(buf)/2, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint16(decoder, len(buf)/2, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint16{0, 1, 2, 3, 4, 5, 6, 7}, got[:])
 		}
@@ -862,37 +671,37 @@ func Test_reflect_readArrayOfUint16(t *testing.T) {
 	{
 		{
 			buf := concatByteSlices(
-				uint16ToBytes(0, LE),
-				uint16ToBytes(1, LE),
-				uint16ToBytes(2, LE),
-				uint16ToBytes(3, LE),
-				uint16ToBytes(4, LE),
-				uint16ToBytes(5, LE),
-				uint16ToBytes(6, LE),
-				uint16ToBytes(7, LE),
+				uint16ToBytes(0),
+				uint16ToBytes(1),
+				uint16ToBytes(2),
+				uint16ToBytes(3),
+				uint16ToBytes(4),
+				uint16ToBytes(5),
+				uint16ToBytes(6),
+				uint16ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 
 			got := make([]uint16, 0)
-			err := reflect_readArrayOfUint16(decoder, len(buf)/2, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint16(decoder, len(buf)/2, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint16{0, 1, 2, 3, 4, 5, 6, 7}, got)
 		}
 		{
 			buf := concatByteSlices(
-				uint16ToBytes(0, LE),
-				uint16ToBytes(1, LE),
-				uint16ToBytes(2, LE),
-				uint16ToBytes(3, LE),
-				uint16ToBytes(4, LE),
-				uint16ToBytes(5, LE),
-				uint16ToBytes(6, LE),
-				uint16ToBytes(7, LE),
+				uint16ToBytes(0),
+				uint16ToBytes(1),
+				uint16ToBytes(2),
+				uint16ToBytes(3),
+				uint16ToBytes(4),
+				uint16ToBytes(5),
+				uint16ToBytes(6),
+				uint16ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 
 			got := [8]uint16{0, 0, 0, 0, 0, 0, 0, 0}
-			err := reflect_readArrayOfUint16(decoder, len(buf)/2, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint16(decoder, len(buf)/2, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint16{0, 1, 2, 3, 4, 5, 6, 7}, got[:])
 		}
@@ -903,37 +712,37 @@ func Test_reflect_readArrayOfUint32(t *testing.T) {
 	{
 		{
 			buf := concatByteSlices(
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
-				uint32ToBytes(3, LE),
-				uint32ToBytes(4, LE),
-				uint32ToBytes(5, LE),
-				uint32ToBytes(6, LE),
-				uint32ToBytes(7, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
+				uint32ToBytes(3),
+				uint32ToBytes(4),
+				uint32ToBytes(5),
+				uint32ToBytes(6),
+				uint32ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 
 			got := make([]uint32, 0)
-			err := reflect_readArrayOfUint32(decoder, len(buf)/4, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint32(decoder, len(buf)/4, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint32{0, 1, 2, 3, 4, 5, 6, 7}, got)
 		}
 		{
 			buf := concatByteSlices(
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
-				uint32ToBytes(3, LE),
-				uint32ToBytes(4, LE),
-				uint32ToBytes(5, LE),
-				uint32ToBytes(6, LE),
-				uint32ToBytes(7, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
+				uint32ToBytes(3),
+				uint32ToBytes(4),
+				uint32ToBytes(5),
+				uint32ToBytes(6),
+				uint32ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 
 			got := [8]uint32{0, 0, 0, 0, 0, 0, 0, 0}
-			err := reflect_readArrayOfUint32(decoder, len(buf)/4, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint32(decoder, len(buf)/4, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint32{0, 1, 2, 3, 4, 5, 6, 7}, got[:])
 		}
@@ -941,37 +750,37 @@ func Test_reflect_readArrayOfUint32(t *testing.T) {
 	{
 		{
 			buf := concatByteSlices(
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
-				uint32ToBytes(3, LE),
-				uint32ToBytes(4, LE),
-				uint32ToBytes(5, LE),
-				uint32ToBytes(6, LE),
-				uint32ToBytes(7, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
+				uint32ToBytes(3),
+				uint32ToBytes(4),
+				uint32ToBytes(5),
+				uint32ToBytes(6),
+				uint32ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 
 			got := make([]uint32, 0)
-			err := reflect_readArrayOfUint32(decoder, len(buf)/4, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint32(decoder, len(buf)/4, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint32{0, 1, 2, 3, 4, 5, 6, 7}, got)
 		}
 		{
 			buf := concatByteSlices(
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
-				uint32ToBytes(3, LE),
-				uint32ToBytes(4, LE),
-				uint32ToBytes(5, LE),
-				uint32ToBytes(6, LE),
-				uint32ToBytes(7, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
+				uint32ToBytes(3),
+				uint32ToBytes(4),
+				uint32ToBytes(5),
+				uint32ToBytes(6),
+				uint32ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 
 			got := [8]uint32{0, 0, 0, 0, 0, 0, 0, 0}
-			err := reflect_readArrayOfUint32(decoder, len(buf)/4, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint32(decoder, len(buf)/4, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint32{0, 1, 2, 3, 4, 5, 6, 7}, got[:])
 		}
@@ -982,36 +791,36 @@ func Test_reflect_readArrayOfUint64(t *testing.T) {
 	{
 		{
 			buf := concatByteSlices(
-				uint64ToBytes(0, LE),
-				uint64ToBytes(1, LE),
-				uint64ToBytes(2, LE),
-				uint64ToBytes(3, LE),
-				uint64ToBytes(4, LE),
-				uint64ToBytes(5, LE),
-				uint64ToBytes(6, LE),
-				uint64ToBytes(7, LE),
+				uint64ToBytes(0),
+				uint64ToBytes(1),
+				uint64ToBytes(2),
+				uint64ToBytes(3),
+				uint64ToBytes(4),
+				uint64ToBytes(5),
+				uint64ToBytes(6),
+				uint64ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 
 			got := make([]uint64, 0)
-			err := reflect_readArrayOfUint64(decoder, len(buf)/8, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint64(decoder, len(buf)/8, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint64{0, 1, 2, 3, 4, 5, 6, 7}, got)
 		}
 		{
 			buf := concatByteSlices(
-				uint64ToBytes(0, LE),
-				uint64ToBytes(1, LE),
-				uint64ToBytes(2, LE),
-				uint64ToBytes(3, LE),
-				uint64ToBytes(4, LE),
-				uint64ToBytes(5, LE),
-				uint64ToBytes(6, LE),
-				uint64ToBytes(7, LE),
+				uint64ToBytes(0),
+				uint64ToBytes(1),
+				uint64ToBytes(2),
+				uint64ToBytes(3),
+				uint64ToBytes(4),
+				uint64ToBytes(5),
+				uint64ToBytes(6),
+				uint64ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 			got := [8]uint64{0, 0, 0, 0, 0, 0, 0, 0}
-			err := reflect_readArrayOfUint64(decoder, len(buf)/8, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint64(decoder, len(buf)/8, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint64{0, 1, 2, 3, 4, 5, 6, 7}, got[:])
 		}
@@ -1019,36 +828,36 @@ func Test_reflect_readArrayOfUint64(t *testing.T) {
 	{
 		{
 			buf := concatByteSlices(
-				uint64ToBytes(0, LE),
-				uint64ToBytes(1, LE),
-				uint64ToBytes(2, LE),
-				uint64ToBytes(3, LE),
-				uint64ToBytes(4, LE),
-				uint64ToBytes(5, LE),
-				uint64ToBytes(6, LE),
-				uint64ToBytes(7, LE),
+				uint64ToBytes(0),
+				uint64ToBytes(1),
+				uint64ToBytes(2),
+				uint64ToBytes(3),
+				uint64ToBytes(4),
+				uint64ToBytes(5),
+				uint64ToBytes(6),
+				uint64ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 
 			got := make([]uint64, 0)
-			err := reflect_readArrayOfUint64(decoder, len(buf)/8, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint64(decoder, len(buf)/8, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint64{0, 1, 2, 3, 4, 5, 6, 7}, got)
 		}
 		{
 			buf := concatByteSlices(
-				uint64ToBytes(0, LE),
-				uint64ToBytes(1, LE),
-				uint64ToBytes(2, LE),
-				uint64ToBytes(3, LE),
-				uint64ToBytes(4, LE),
-				uint64ToBytes(5, LE),
-				uint64ToBytes(6, LE),
-				uint64ToBytes(7, LE),
+				uint64ToBytes(0),
+				uint64ToBytes(1),
+				uint64ToBytes(2),
+				uint64ToBytes(3),
+				uint64ToBytes(4),
+				uint64ToBytes(5),
+				uint64ToBytes(6),
+				uint64ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 			got := [8]uint64{0, 0, 0, 0, 0, 0, 0, 0}
-			err := reflect_readArrayOfUint64(decoder, len(buf)/8, reflect.ValueOf(&got).Elem(), LE)
+			err := reflect_readArrayOfUint64(decoder, len(buf)/8, reflect.ValueOf(&got).Elem())
 			require.NoError(t, err)
 			require.Equal(t, []uint64{0, 1, 2, 3, 4, 5, 6, 7}, got[:])
 		}
@@ -1059,40 +868,40 @@ func Test_reflect_readArrayOfUint(t *testing.T) {
 	{
 		{
 			buf := concatByteSlices(
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
-				uint32ToBytes(3, LE),
-				uint32ToBytes(4, LE),
-				uint32ToBytes(5, LE),
-				uint32ToBytes(6, LE),
-				uint32ToBytes(7, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
+				uint32ToBytes(3),
+				uint32ToBytes(4),
+				uint32ToBytes(5),
+				uint32ToBytes(6),
+				uint32ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 
 			got := make([]uint32, 0)
 			rv := reflect.ValueOf(&got).Elem()
 			k := rv.Type().Elem().Kind()
-			err := reflect_readArrayOfUint_(decoder, len(buf)/4, k, rv, LE)
+			err := reflect_readArrayOfUint_(decoder, len(buf)/4, k, rv)
 			require.NoError(t, err)
 			require.Equal(t, []uint32{0, 1, 2, 3, 4, 5, 6, 7}, got)
 		}
 		{
 			buf := concatByteSlices(
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
-				uint32ToBytes(3, LE),
-				uint32ToBytes(4, LE),
-				uint32ToBytes(5, LE),
-				uint32ToBytes(6, LE),
-				uint32ToBytes(7, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
+				uint32ToBytes(3),
+				uint32ToBytes(4),
+				uint32ToBytes(5),
+				uint32ToBytes(6),
+				uint32ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 			got := [8]uint32{0, 0, 0, 0, 0, 0, 0, 0}
 			rv := reflect.ValueOf(&got).Elem()
 			k := rv.Type().Elem().Kind()
-			err := reflect_readArrayOfUint_(decoder, len(buf)/4, k, rv, LE)
+			err := reflect_readArrayOfUint_(decoder, len(buf)/4, k, rv)
 			require.NoError(t, err)
 			require.Equal(t, []uint32{0, 1, 2, 3, 4, 5, 6, 7}, got[:])
 		}
@@ -1106,9 +915,9 @@ func Test_Decode_custom(t *testing.T) {
 				// length:
 				[]byte{3},
 				// data:
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
 			)
 			decoder := NewBinDecoder(buf)
 
@@ -1123,9 +932,9 @@ func Test_Decode_custom(t *testing.T) {
 		{
 			buf := concatByteSlices(
 				// data:
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
 			)
 			decoder := NewBinDecoder(buf)
 
@@ -1142,9 +951,9 @@ func Test_Decode_custom(t *testing.T) {
 				// length:
 				[]byte{3},
 				// data:
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
 			)
 			decoder := NewBinDecoder(buf)
 
@@ -1159,9 +968,9 @@ func Test_Decode_custom(t *testing.T) {
 		{
 			buf := concatByteSlices(
 				// data:
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
 			)
 			decoder := NewBinDecoder(buf)
 
@@ -1261,9 +1070,9 @@ func Test_Decode_readArrayOfUint(t *testing.T) {
 				// length:
 				[]byte{3},
 				// data:
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
 			)
 			decoder := NewBinDecoder(buf)
 
@@ -1274,14 +1083,14 @@ func Test_Decode_readArrayOfUint(t *testing.T) {
 		}
 		{
 			buf := concatByteSlices(
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
-				uint32ToBytes(3, LE),
-				uint32ToBytes(4, LE),
-				uint32ToBytes(5, LE),
-				uint32ToBytes(6, LE),
-				uint32ToBytes(7, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
+				uint32ToBytes(3),
+				uint32ToBytes(4),
+				uint32ToBytes(5),
+				uint32ToBytes(6),
+				uint32ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 			got := [8]uint32{0, 0, 0, 0, 0, 0, 0, 0}
@@ -1294,16 +1103,16 @@ func Test_Decode_readArrayOfUint(t *testing.T) {
 		{
 			buf := concatByteSlices(
 				// length:
-				uint32ToBytes(8, LE),
+				uint32ToBytes(8),
 				// data:
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
-				uint32ToBytes(3, LE),
-				uint32ToBytes(4, LE),
-				uint32ToBytes(5, LE),
-				uint32ToBytes(6, LE),
-				uint32ToBytes(7, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
+				uint32ToBytes(3),
+				uint32ToBytes(4),
+				uint32ToBytes(5),
+				uint32ToBytes(6),
+				uint32ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 
@@ -1314,14 +1123,14 @@ func Test_Decode_readArrayOfUint(t *testing.T) {
 		}
 		{
 			buf := concatByteSlices(
-				uint32ToBytes(0, LE),
-				uint32ToBytes(1, LE),
-				uint32ToBytes(2, LE),
-				uint32ToBytes(3, LE),
-				uint32ToBytes(4, LE),
-				uint32ToBytes(5, LE),
-				uint32ToBytes(6, LE),
-				uint32ToBytes(7, LE),
+				uint32ToBytes(0),
+				uint32ToBytes(1),
+				uint32ToBytes(2),
+				uint32ToBytes(3),
+				uint32ToBytes(4),
+				uint32ToBytes(5),
+				uint32ToBytes(6),
+				uint32ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 			got := [8]uint32{0, 0, 0, 0, 0, 0, 0, 0}
@@ -1339,14 +1148,14 @@ func Test_reflect_readArrayOfUint16_asField(t *testing.T) {
 				// length:
 				[]byte{8},
 				// data:
-				uint16ToBytes(0, LE),
-				uint16ToBytes(1, LE),
-				uint16ToBytes(2, LE),
-				uint16ToBytes(3, LE),
-				uint16ToBytes(4, LE),
-				uint16ToBytes(5, LE),
-				uint16ToBytes(6, LE),
-				uint16ToBytes(7, LE),
+				uint16ToBytes(0),
+				uint16ToBytes(1),
+				uint16ToBytes(2),
+				uint16ToBytes(3),
+				uint16ToBytes(4),
+				uint16ToBytes(5),
+				uint16ToBytes(6),
+				uint16ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 
@@ -1361,14 +1170,14 @@ func Test_reflect_readArrayOfUint16_asField(t *testing.T) {
 		{
 			buf := concatByteSlices(
 				// data:
-				uint16ToBytes(0, LE),
-				uint16ToBytes(1, LE),
-				uint16ToBytes(2, LE),
-				uint16ToBytes(3, LE),
-				uint16ToBytes(4, LE),
-				uint16ToBytes(5, LE),
-				uint16ToBytes(6, LE),
-				uint16ToBytes(7, LE),
+				uint16ToBytes(0),
+				uint16ToBytes(1),
+				uint16ToBytes(2),
+				uint16ToBytes(3),
+				uint16ToBytes(4),
+				uint16ToBytes(5),
+				uint16ToBytes(6),
+				uint16ToBytes(7),
 			)
 			decoder := NewBinDecoder(buf)
 
@@ -1385,16 +1194,16 @@ func Test_reflect_readArrayOfUint16_asField(t *testing.T) {
 		{
 			buf := concatByteSlices(
 				// length:
-				uint32ToBytes(8, LE),
+				uint32ToBytes(8),
 				// data:
-				uint16ToBytes(0, LE),
-				uint16ToBytes(1, LE),
-				uint16ToBytes(2, LE),
-				uint16ToBytes(3, LE),
-				uint16ToBytes(4, LE),
-				uint16ToBytes(5, LE),
-				uint16ToBytes(6, LE),
-				uint16ToBytes(7, LE),
+				uint16ToBytes(0),
+				uint16ToBytes(1),
+				uint16ToBytes(2),
+				uint16ToBytes(3),
+				uint16ToBytes(4),
+				uint16ToBytes(5),
+				uint16ToBytes(6),
+				uint16ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 
@@ -1408,14 +1217,14 @@ func Test_reflect_readArrayOfUint16_asField(t *testing.T) {
 		}
 		{
 			buf := concatByteSlices(
-				uint16ToBytes(0, LE),
-				uint16ToBytes(1, LE),
-				uint16ToBytes(2, LE),
-				uint16ToBytes(3, LE),
-				uint16ToBytes(4, LE),
-				uint16ToBytes(5, LE),
-				uint16ToBytes(6, LE),
-				uint16ToBytes(7, LE),
+				uint16ToBytes(0),
+				uint16ToBytes(1),
+				uint16ToBytes(2),
+				uint16ToBytes(3),
+				uint16ToBytes(4),
+				uint16ToBytes(5),
+				uint16ToBytes(6),
+				uint16ToBytes(7),
 			)
 			decoder := NewBorshDecoder(buf)
 

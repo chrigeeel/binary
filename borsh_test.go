@@ -1126,14 +1126,14 @@ type CustomEncoding struct {
 }
 
 func (e CustomEncoding) MarshalWithEncoder(encoder *Encoder) error {
-	if err := encoder.WriteUint32(e.Value, LE); err != nil {
+	if err := encoder.WriteUint32(e.Value); err != nil {
 		return err
 	}
 	return encoder.WriteByte(e.Prefix)
 }
 
 func (e *CustomEncoding) UnmarshalWithDecoder(decoder *Decoder) (err error) {
-	if e.Value, err = decoder.ReadUint32(LE); err != nil {
+	if e.Value, err = decoder.ReadUint32(); err != nil {
 		return err
 	}
 	if e.Prefix, err = decoder.ReadByte(); err != nil {
@@ -1586,24 +1586,6 @@ func TestSlices(t *testing.T) {
 		{makeInt32Slice(1000000006, 32)},
 		{makeInt32Slice(1000000007, 64)},
 		{makeInt32Slice(1000000008, 65)},
-	}
-
-	for _, tt := range tests {
-		testValue(t, tt.in)
-	}
-}
-
-func TestUint128_old(t *testing.T) {
-	tests := []struct {
-		in Int128
-	}{
-		{func() Int128 {
-			v := Int128{
-				Hi: math.MaxInt16,
-				Lo: math.MaxInt16,
-			}
-			return v
-		}()},
 	}
 
 	for _, tt := range tests {
