@@ -8,7 +8,7 @@ import (
 func newUint64SliceEncoded(l int) []byte {
 	buf := make([]byte, 0)
 	for i := 0; i < l; i++ {
-		buf = append(buf, uint64ToBytes(uint64(i), LE)...)
+		buf = append(buf, uint64ToBytes(uint64(i))...)
 	}
 	return buf
 }
@@ -17,7 +17,7 @@ func Benchmark_uintSlice64_Decode_noMake(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -41,7 +41,7 @@ func Benchmark_uintSlice64_Decode_make(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -66,7 +66,7 @@ func Benchmark_uintSlice64_Decode_field_noMake(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -93,7 +93,7 @@ func Benchmark_uintSlice64_Decode_field_make(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -191,7 +191,7 @@ func Benchmark_uintSlice64_Decode_field_withCustomDecoder(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint64SliceEncoded(l),
 	)
@@ -215,7 +215,7 @@ func Benchmark_uintSlice64_Decode_field_withCustomDecoder(b *testing.B) {
 func newUint32SliceEncoded(l int) []byte {
 	buf := make([]byte, 0)
 	for i := 0; i < l; i++ {
-		buf = append(buf, uint32ToBytes(uint32(i), LE)...)
+		buf = append(buf, uint32ToBytes(uint32(i))...)
 	}
 	return buf
 }
@@ -224,7 +224,7 @@ func Benchmark_uintSlice32_Decode_noMake(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)
@@ -248,7 +248,7 @@ func Benchmark_uintSlice32_Decode_make(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)
@@ -273,7 +273,7 @@ func Benchmark_uintSlice32_Decode_field_noMake(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)
@@ -300,7 +300,7 @@ func Benchmark_uintSlice32_Decode_field_make(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)
@@ -397,7 +397,7 @@ func Benchmark_uintSlice32_Decode_field_withCustomDecoder(b *testing.B) {
 	l := 1024
 	buf := concatByteSlices(
 		// length:
-		uint32ToBytes(uint32(l), LE),
+		uint32ToBytes(uint32(l)),
 		// data:
 		newUint32SliceEncoded(l),
 	)

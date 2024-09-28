@@ -534,22 +534,14 @@ func (dec *Decoder) ReadUint128() (out Uint128, err error) {
 
 	data := dec.data[dec.pos : dec.pos+TypeSize.Uint128]
 
-	out.Hi = LE.Uint64(data[8:])
-	out.Lo = LE.Uint64(data[:8])
+	out[1] = LE.Uint64(data[8:])
+	out[0] = LE.Uint64(data[:8])
 
 	dec.pos += TypeSize.Uint128
 	if traceEnabled {
-		zlog.Debug("decode: read uint128", zap.Stringer("hex", out), zap.Uint64("hi", out.Hi), zap.Uint64("lo", out.Lo))
+		zlog.Debug("decode: read uint128", zap.Stringer("hex", &out), zap.Uint64("hi", out[1]), zap.Uint64("lo", out[0]))
 	}
 	return
-}
-
-func (dec *Decoder) ReadInt128() (out Int128, err error) {
-	v, err := dec.ReadUint128()
-	if err != nil {
-		return
-	}
-	return Int128(v), nil
 }
 
 func (dec *Decoder) ReadFloat32() (out float32, err error) {
@@ -591,14 +583,6 @@ func (dec *Decoder) ReadFloat64() (out float64, err error) {
 		}
 	}
 	return
-}
-
-func (dec *Decoder) ReadFloat128() (out Float128, err error) {
-	value, err := dec.ReadUint128()
-	if err != nil {
-		return out, fmt.Errorf("float128: %s", err)
-	}
-	return Float128(value), nil
 }
 
 func (dec *Decoder) SafeReadUTF8String() (out string, err error) {

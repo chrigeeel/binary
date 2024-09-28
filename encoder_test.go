@@ -19,7 +19,6 @@ package bin
 
 import (
 	"bytes"
-	"encoding/binary"
 	"encoding/hex"
 	"math"
 	"reflect"
@@ -94,24 +93,12 @@ func TestEncoder_int16(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	enc := NewBinEncoder(buf)
-	enc.WriteInt16(int16(-82), LE)
-	enc.WriteInt16(int16(73), LE)
+	enc.WriteInt16(int16(-82))
+	enc.WriteInt16(int16(73))
 
 	assert.Equal(t, []byte{
 		0xae, 0xff, // -82
 		0x49, 0x00, // 73
-	}, buf.Bytes())
-
-	// big endian
-	buf = new(bytes.Buffer)
-
-	enc = NewBinEncoder(buf)
-	enc.WriteInt16(int16(-82), BE)
-	enc.WriteInt16(int16(73), BE)
-
-	assert.Equal(t, []byte{
-		0xff, 0xae, // -82
-		0x00, 0x49, // 73
 	}, buf.Bytes())
 }
 
@@ -120,24 +107,12 @@ func TestEncoder_int32(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	enc := NewBinEncoder(buf)
-	enc.WriteInt32(int32(-276132392), LE)
-	enc.WriteInt32(int32(237391), LE)
+	enc.WriteInt32(int32(-276132392))
+	enc.WriteInt32(int32(237391))
 
 	assert.Equal(t, []byte{
 		0xd8, 0x8d, 0x8a, 0xef,
 		0x4f, 0x9f, 0x3, 0x00,
-	}, buf.Bytes())
-
-	// big endian
-	buf = new(bytes.Buffer)
-
-	enc = NewBinEncoder(buf)
-	enc.WriteInt32(int32(-276132392), BE)
-	enc.WriteInt32(int32(237391), BE)
-
-	assert.Equal(t, []byte{
-		0xef, 0x8a, 0x8d, 0xd8,
-		0x00, 0x3, 0x9f, 0x4f,
 	}, buf.Bytes())
 }
 
@@ -146,24 +121,12 @@ func TestEncoder_int64(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	enc := NewBinEncoder(buf)
-	enc.WriteInt64(int64(-819823), LE)
-	enc.WriteInt64(int64(72931), LE)
+	enc.WriteInt64(int64(-819823))
+	enc.WriteInt64(int64(72931))
 
 	assert.Equal(t, []byte{
 		0x91, 0x7d, 0xf3, 0xff, 0xff, 0xff, 0xff, 0xff, //-819823
 		0xe3, 0x1c, 0x1, 0x00, 0x00, 0x00, 0x00, 0x00, // 72931
-	}, buf.Bytes())
-
-	// big endian
-	buf = new(bytes.Buffer)
-
-	enc = NewBinEncoder(buf)
-	enc.WriteInt64(int64(-819823), BE)
-	enc.WriteInt64(int64(72931), BE)
-
-	assert.Equal(t, []byte{
-		0xff, 0xff, 0xff, 0xff, 0xff, 0xf3, 0x7d, 0x91, //-819823
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x1, 0x1c, 0xe3, // 72931
 	}, buf.Bytes())
 }
 
@@ -185,24 +148,12 @@ func TestEncoder_uint16(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	enc := NewBinEncoder(buf)
-	enc.WriteUint16(uint16(82), LE)
-	enc.WriteUint16(uint16(73), LE)
+	enc.WriteUint16(uint16(82))
+	enc.WriteUint16(uint16(73))
 
 	assert.Equal(t, []byte{
 		0x52, 0x00, // 82
 		0x49, 0x00, // 73
-	}, buf.Bytes())
-
-	// big endian
-	buf = new(bytes.Buffer)
-
-	enc = NewBinEncoder(buf)
-	enc.WriteUint16(uint16(82), BE)
-	enc.WriteUint16(uint16(73), BE)
-
-	assert.Equal(t, []byte{
-		0x00, 0x52, // 82
-		0x00, 0x49, // 73
 	}, buf.Bytes())
 }
 
@@ -211,24 +162,12 @@ func TestEncoder_uint32(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	enc := NewBinEncoder(buf)
-	enc.WriteUint32(uint32(276132392), LE)
-	enc.WriteUint32(uint32(237391), LE)
+	enc.WriteUint32(uint32(276132392))
+	enc.WriteUint32(uint32(237391))
 
 	assert.Equal(t, []byte{
 		0x28, 0x72, 0x75, 0x10, // 276132392 as LE
 		0x4f, 0x9f, 0x03, 0x00, // 237391 as LE
-	}, buf.Bytes())
-
-	// big endian
-	buf = new(bytes.Buffer)
-
-	enc = NewBinEncoder(buf)
-	enc.WriteUint32(uint32(276132392), BE)
-	enc.WriteUint32(uint32(237391), BE)
-
-	assert.Equal(t, []byte{
-		0x10, 0x75, 0x72, 0x28, // 276132392 as LE
-		0x00, 0x03, 0x9f, 0x4f, // 237391 as LE
 	}, buf.Bytes())
 }
 
@@ -237,24 +176,12 @@ func TestEncoder_uint64(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	enc := NewBinEncoder(buf)
-	enc.WriteUint64(uint64(819823), LE)
-	enc.WriteUint64(uint64(72931), LE)
+	enc.WriteUint64(uint64(819823))
+	enc.WriteUint64(uint64(72931))
 
 	assert.Equal(t, []byte{
 		0x6f, 0x82, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, // 819823
 		0xe3, 0x1c, 0x1, 0x00, 0x00, 0x00, 0x00, 0x00, // 72931
-	}, buf.Bytes())
-
-	// big endian
-	buf = new(bytes.Buffer)
-
-	enc = NewBinEncoder(buf)
-	enc.WriteUint64(uint64(819823), BE)
-	enc.WriteUint64(uint64(72931), BE)
-
-	assert.Equal(t, []byte{
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x82, 0x6f, // 819823
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x1, 0x1c, 0xe3, // 72931
 	}, buf.Bytes())
 }
 
@@ -263,23 +190,12 @@ func TestEncoder_float32(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	enc := NewBinEncoder(buf)
-	enc.WriteFloat32(float32(1.32), LE)
-	enc.WriteFloat32(float32(-3.21), LE)
+	enc.WriteFloat32(float32(1.32))
+	enc.WriteFloat32(float32(-3.21))
 
 	assert.Equal(t, []byte{
 		0xc3, 0xf5, 0xa8, 0x3f,
 		0xa4, 0x70, 0x4d, 0xc0,
-	}, buf.Bytes())
-
-	// big endian
-	buf = new(bytes.Buffer)
-
-	enc = NewBinEncoder(buf)
-	enc.WriteFloat32(float32(1.32), BE)
-	enc.WriteFloat32(float32(-3.21), BE)
-	assert.Equal(t, []byte{
-		0x3f, 0xa8, 0xf5, 0xc3,
-		0xc0, 0x4d, 0x70, 0xa4,
 	}, buf.Bytes())
 }
 
@@ -288,32 +204,16 @@ func TestEncoder_float64(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	enc := NewBinEncoder(buf)
-	enc.WriteFloat64(float64(-62.23), LE)
-	enc.WriteFloat64(float64(23.239), LE)
-	enc.WriteFloat64(float64(math.Inf(1)), LE)
-	enc.WriteFloat64(float64(math.Inf(-1)), LE)
+	enc.WriteFloat64(float64(-62.23))
+	enc.WriteFloat64(float64(23.239))
+	enc.WriteFloat64(float64(math.Inf(1)))
+	enc.WriteFloat64(float64(math.Inf(-1)))
 
 	assert.Equal(t, []byte{
 		0x3d, 0x0a, 0xd7, 0xa3, 0x70, 0x1d, 0x4f, 0xc0,
 		0x77, 0xbe, 0x9f, 0x1a, 0x2f, 0x3d, 0x37, 0x40,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x7f,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0xff,
-	}, buf.Bytes())
-
-	// big endian
-	buf = new(bytes.Buffer)
-
-	enc = NewBinEncoder(buf)
-	enc.WriteFloat64(float64(-62.23), BE)
-	enc.WriteFloat64(float64(23.239), BE)
-	enc.WriteFloat64(float64(math.Inf(1)), BE)
-	enc.WriteFloat64(float64(math.Inf(-1)), BE)
-
-	assert.Equal(t, []byte{
-		0xc0, 0x4f, 0x1d, 0x70, 0xa3, 0xd7, 0x0a, 0x3d,
-		0x40, 0x37, 0x3d, 0x2f, 0x1a, 0x9f, 0xbe, 0x77,
-		0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		0xff, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	}, buf.Bytes())
 }
 
@@ -418,29 +318,18 @@ func Test_OptionalPointerToPrimitiveType(t *testing.T) {
 func TestEncoder_Uint128(t *testing.T) {
 	// little endian
 	u := Uint128{
-		Lo: 7,
-		Hi: 9,
+		7,
+		9,
 	}
 
 	buf := new(bytes.Buffer)
 
 	enc := NewBinEncoder(buf)
-	enc.WriteUint128(u, LE)
+	enc.WriteUint128(u)
 
 	assert.Equal(t, []byte{
 		0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	}, buf.Bytes())
-
-	// big endian
-	buf = new(bytes.Buffer)
-
-	enc = NewBinEncoder(buf)
-	enc.WriteUint128(u, BE)
-
-	assert.Equal(t, []byte{
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x09,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x07,
 	}, buf.Bytes())
 }
 
@@ -464,16 +353,17 @@ func TestEncoder_BinaryStruct(t *testing.T) {
 		F16: Uint64(23),
 		F17: JSONFloat64(3.14),
 		F18: Uint128{
-			Lo: 10,
-			Hi: 82,
+			10,
+			82,
 		},
-		F19: Int128{
-			Lo: 7,
-			Hi: 3,
+
+		F19: Uint128{
+			7,
+			3,
 		},
-		F20: Float128{
-			Lo: 10,
-			Hi: 82,
+		F20: Uint128{
+			10,
+			82,
 		},
 		F21: Varuint32(999),
 		F22: Varint32(-999),
@@ -508,14 +398,14 @@ func TestEncoder_BinaryTestStructWithTags(t *testing.T) {
 	}
 
 	expected := []byte{
-		255, 181, // F2
-		0, 99, // F3
-		255, 255, 255, 25, // F4
-		0, 0, 3, 231, // F5
-		255, 255, 255, 255, 255, 255, 204, 81, // F6
-		0, 0, 0, 0, 0, 1, 134, 159, // F7
-		193, 185, 10, 61, // F8
-		64, 15, 92, 40, 245, 194, 143, 92, // F9
+		181, 255, // F2
+		99, 0, // F3
+		25, 255, 255, 255, // F4
+		231, 3, 0, 0, // F5
+		81, 204, 255, 255, 255, 255, 255, 255, // F6
+		159, 134, 1, 0, 0, 0, 0, 0, // F7
+		61, 10, 185, 193, // F8
+		92, 143, 194, 245, 40, 92, 15, 64, // F9
 		1, // F10
 
 		0, 0, 0, 0, // F11 is optional, and NOT SET (meaning uint32(0))
@@ -529,49 +419,49 @@ func TestEncoder_BinaryTestStructWithTags(t *testing.T) {
 		buf := new(bytes.Buffer)
 		enc := NewBinEncoder(buf)
 		{
-			err := enc.WriteInt16(s.F2, binary.BigEndian) // [255, 181](len=2)
+			err := enc.WriteInt16(s.F2) // [255, 181](len=2)
 			if err != nil {
 				panic(err)
 			}
 		}
 		{
-			err := enc.WriteUint16(s.F3, binary.BigEndian) // [0, 99](len=2)
+			err := enc.WriteUint16(s.F3) // [0, 99](len=2)
 			if err != nil {
 				panic(err)
 			}
 		}
 		{
-			err := enc.WriteInt32(s.F4, binary.BigEndian) // [255, 255, 255, 25](len=4)
+			err := enc.WriteInt32(s.F4) // [255, 255, 255, 25](len=4)
 			if err != nil {
 				panic(err)
 			}
 		}
 		{
-			err := enc.WriteUint32(s.F5, binary.BigEndian) // [0, 0, 3, 231](len=4)
+			err := enc.WriteUint32(s.F5) // [0, 0, 3, 231](len=4)
 			if err != nil {
 				panic(err)
 			}
 		}
 		{
-			err := enc.WriteInt64(s.F6, binary.BigEndian) // [255, 255, 255, 255, 255, 255, 204, 81](len=8)
+			err := enc.WriteInt64(s.F6) // [255, 255, 255, 255, 255, 255, 204, 81](len=8)
 			if err != nil {
 				panic(err)
 			}
 		}
 		{
-			err := enc.WriteUint64(s.F7, binary.BigEndian) // [0, 0, 0, 0, 0, 1, 134, 159](len=8)
+			err := enc.WriteUint64(s.F7) // [0, 0, 0, 0, 0, 1, 134, 159](len=8)
 			if err != nil {
 				panic(err)
 			}
 		}
 		{
-			err := enc.WriteFloat32(s.F8, binary.BigEndian) // [193, 185, 10, 61](len=4)
+			err := enc.WriteFloat32(s.F8) // [193, 185, 10, 61](len=4)
 			if err != nil {
 				panic(err)
 			}
 		}
 		{
-			err := enc.WriteFloat64(s.F9, binary.BigEndian) // [64, 15, 92, 40, 245, 194, 143, 92](len=8)
+			err := enc.WriteFloat64(s.F9) // [64, 15, 92, 40, 245, 194, 143, 92](len=8)
 			if err != nil {
 				panic(err)
 			}
@@ -583,13 +473,13 @@ func TestEncoder_BinaryTestStructWithTags(t *testing.T) {
 			}
 		}
 		{
-			err := enc.WriteUint32(0, binary.LittleEndian) // [0, 0, 0, 0](len=4)
+			err := enc.WriteUint32(0) // [0, 0, 0, 0](len=4)
 			if err != nil {
 				panic(err)
 			}
 		}
 		{
-			err := enc.WriteUint32(1, binary.LittleEndian) // [1, 0, 0, 0](len=4)
+			err := enc.WriteUint32(1) // [1, 0, 0, 0](len=4)
 			if err != nil {
 				panic(err)
 			}
@@ -601,13 +491,13 @@ func TestEncoder_BinaryTestStructWithTags(t *testing.T) {
 			}
 		}
 		{
-			err := enc.WriteInt64((*s.F12)[0], binary.LittleEndian) // [99, 0, 0, 0, 0, 0, 0, 0](len=8)
+			err := enc.WriteInt64((*s.F12)[0]) // [99, 0, 0, 0, 0, 0, 0, 0](len=8)
 			if err != nil {
 				panic(err)
 			}
 		}
 		{
-			err := enc.WriteInt64((*s.F12)[1], binary.LittleEndian) // [33, 0, 0, 0, 0, 0, 0, 0](len=8)
+			err := enc.WriteInt64((*s.F12)[1]) // [33, 0, 0, 0, 0, 0, 0, 0](len=8)
 			if err != nil {
 				panic(err)
 			}
@@ -623,6 +513,7 @@ func TestEncoder_BinaryTestStructWithTags(t *testing.T) {
 	buf := new(bytes.Buffer)
 	enc := NewBinEncoder(buf)
 	err := enc.Encode(s)
+
 	assert.NoError(t, err)
 
 	assert.Equal(t,
@@ -914,7 +805,7 @@ func Test_writeArrayOfUint16(t *testing.T) {
 			arr := [3]uint16{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint16(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint16(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t, concatByteSlices(
 				[]byte{1, 0, 2, 0, 3, 0},
@@ -927,7 +818,7 @@ func Test_writeArrayOfUint16(t *testing.T) {
 			arr := [3]uint16{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint16(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint16(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t, concatByteSlices(
 				[]byte{1, 0, 2, 0, 3, 0},
@@ -942,7 +833,7 @@ func Test_writeArrayOfUint16(t *testing.T) {
 			arr := []uint16{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint16(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint16(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t, concatByteSlices(
 				[]byte{1, 0, 2, 0, 3, 0},
@@ -955,7 +846,7 @@ func Test_writeArrayOfUint16(t *testing.T) {
 			arr := []uint16{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint16(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint16(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t, concatByteSlices(
 				[]byte{1, 0, 2, 0, 3, 0},
@@ -973,7 +864,7 @@ func Test_writeArrayOfUint32(t *testing.T) {
 			arr := [3]uint32{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t,
 				concatByteSlices(
@@ -991,7 +882,7 @@ func Test_writeArrayOfUint32(t *testing.T) {
 			arr := [3]uint32{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t,
 				concatByteSlices(
@@ -1011,7 +902,7 @@ func Test_writeArrayOfUint32(t *testing.T) {
 			arr := []uint32{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 
 			assert.Equal(t,
@@ -1030,7 +921,7 @@ func Test_writeArrayOfUint32(t *testing.T) {
 			arr := []uint32{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 
 			assert.Equal(t,
@@ -1050,7 +941,7 @@ func Test_writeArrayOfUint32(t *testing.T) {
 		arr := [10]uint32{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 		l := len(arr)
 
-		err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr), LE)
+		err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr))
 		assert.NoError(t, err)
 		assert.Equal(t,
 			concatByteSlices(
@@ -1074,7 +965,7 @@ func Test_writeArrayOfUint32(t *testing.T) {
 		arr := [32]uint32{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32}
 		l := len(arr)
 
-		err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr), LE)
+		err := reflect_writeArrayOfUint32(enc, l, reflect.ValueOf(arr))
 		assert.NoError(t, err)
 		assert.Equal(t,
 			concatByteSlices(
@@ -1124,7 +1015,7 @@ func Test_writeArrayOfUint64(t *testing.T) {
 			arr := [3]uint64{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t,
 				concatByteSlices(
@@ -1142,7 +1033,7 @@ func Test_writeArrayOfUint64(t *testing.T) {
 			arr := []uint64{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t,
 				concatByteSlices(
@@ -1162,7 +1053,7 @@ func Test_writeArrayOfUint64(t *testing.T) {
 			arr := [3]uint64{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t,
 				concatByteSlices(
@@ -1180,7 +1071,7 @@ func Test_writeArrayOfUint64(t *testing.T) {
 			arr := []uint64{1, 2, 3}
 			l := len(arr)
 
-			err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr), LE)
+			err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr))
 			assert.NoError(t, err)
 			assert.Equal(t,
 				concatByteSlices(
@@ -1199,7 +1090,7 @@ func Test_writeArrayOfUint64(t *testing.T) {
 		arr := [64]uint64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64}
 		l := len(arr)
 
-		err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr), LE)
+		err := reflect_writeArrayOfUint64(enc, l, reflect.ValueOf(arr))
 		assert.NoError(t, err)
 
 		assert.Equal(t,

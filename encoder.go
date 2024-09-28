@@ -132,7 +132,7 @@ func (e *Encoder) WriteLength(length int) error {
 			return err
 		}
 	case EncodingBorsh:
-		if err := e.WriteUint32(uint32(length), LE); err != nil {
+		if err := e.WriteUint32(uint32(length)); err != nil {
 			return err
 		}
 	case EncodingCompactU16:
@@ -189,7 +189,7 @@ func (e *Encoder) WriteCOption(b bool) (err error) {
 	if b {
 		num = 1
 	}
-	return e.WriteUint32(num, LE)
+	return e.WriteUint32(num)
 }
 
 func (e *Encoder) WriteBool(b bool) (err error) {
@@ -211,91 +211,67 @@ func (e *Encoder) WriteInt8(i int8) (err error) {
 	return e.WriteByte(uint8(i))
 }
 
-func (e *Encoder) WriteUint16(i uint16, order binary.ByteOrder) (err error) {
+func (e *Encoder) WriteUint16(i uint16) (err error) {
 	if traceEnabled {
 		zlog.Debug("encode: write uint16", zap.Uint16("val", i))
 	}
 	buf := make([]byte, TypeSize.Uint16)
-	order.PutUint16(buf, i)
+	LE.PutUint16(buf, i)
 	return e.toWriter(buf)
 }
 
-func (e *Encoder) WriteInt16(i int16, order binary.ByteOrder) (err error) {
+func (e *Encoder) WriteInt16(i int16) (err error) {
 	if traceEnabled {
 		zlog.Debug("encode: write int16", zap.Int16("val", i))
 	}
-	return e.WriteUint16(uint16(i), order)
+	return e.WriteUint16(uint16(i))
 }
 
-func (e *Encoder) WriteUint32(i uint32, order binary.ByteOrder) (err error) {
+func (e *Encoder) WriteUint32(i uint32) (err error) {
 	if traceEnabled {
 		zlog.Debug("encode: write uint32", zap.Uint32("val", i))
 	}
 	buf := make([]byte, TypeSize.Uint32)
-	order.PutUint32(buf, i)
+	LE.PutUint32(buf, i)
 	return e.toWriter(buf)
 }
 
-func (e *Encoder) WriteInt32(i int32, order binary.ByteOrder) (err error) {
+func (e *Encoder) WriteInt32(i int32) (err error) {
 	if traceEnabled {
 		zlog.Debug("encode: write int32", zap.Int32("val", i))
 	}
-	return e.WriteUint32(uint32(i), order)
+	return e.WriteUint32(uint32(i))
 }
 
-func (e *Encoder) WriteUint64(i uint64, order binary.ByteOrder) (err error) {
+func (e *Encoder) WriteUint64(i uint64) (err error) {
 	if traceEnabled {
 		zlog.Debug("encode: write uint64", zap.Uint64("val", i))
 	}
 	buf := make([]byte, TypeSize.Uint64)
-	order.PutUint64(buf, i)
+	LE.PutUint64(buf, i)
 	return e.toWriter(buf)
 }
 
-func (e *Encoder) WriteInt64(i int64, order binary.ByteOrder) (err error) {
+func (e *Encoder) WriteInt64(i int64) (err error) {
 	if traceEnabled {
 		zlog.Debug("encode: write int64", zap.Int64("val", i))
 	}
-	return e.WriteUint64(uint64(i), order)
+	return e.WriteUint64(uint64(i))
 }
 
-func (e *Encoder) WriteUint128(i Uint128, order binary.ByteOrder) (err error) {
+func (e *Encoder) WriteUint128(z Uint128) (err error) {
 	if traceEnabled {
-		zlog.Debug("encode: write uint128", zap.Stringer("hex", i), zap.Uint64("lo", i.Lo), zap.Uint64("hi", i.Hi))
+		zlog.Debug("encode: write uint128", zap.Stringer("hex", &z), zap.Uint64("lo", z[0]), zap.Uint64("hi", z[1]))
 	}
 	buf := make([]byte, TypeSize.Uint128)
-	switch order {
-	case binary.LittleEndian:
-		order.PutUint64(buf[:8], i.Lo)
-		order.PutUint64(buf[8:], i.Hi)
-	case binary.BigEndian:
-		order.PutUint64(buf[:8], i.Hi)
-		order.PutUint64(buf[8:], i.Lo)
-	default:
-		return fmt.Errorf("invalid byte order: %v", order)
-	}
+
+	LE.PutUint64(buf[:8], z[0])
+	LE.PutUint64(buf[8:], z[1])
+
 	return e.toWriter(buf)
 }
 
-func (e *Encoder) WriteInt128(i Int128, order binary.ByteOrder) (err error) {
-	if traceEnabled {
-		zlog.Debug("encode: write int128", zap.Stringer("hex", i), zap.Uint64("lo", i.Lo), zap.Uint64("hi", i.Hi))
-	}
-	buf := make([]byte, TypeSize.Uint128)
-	switch order {
-	case binary.LittleEndian:
-		order.PutUint64(buf[:8], i.Lo)
-		order.PutUint64(buf[8:], i.Hi)
-	case binary.BigEndian:
-		order.PutUint64(buf[:8], i.Hi)
-		order.PutUint64(buf[8:], i.Lo)
-	default:
-		return fmt.Errorf("invalid byte order: %v", order)
-	}
-	return e.toWriter(buf)
-}
-
-func (e *Encoder) WriteFloat32(f float32, order binary.ByteOrder) (err error) {
+func (e *Encoder) WriteFloat32(f float32) (err error) {
 	if traceEnabled {
 		zlog.Debug("encode: write float32", zap.Float32("val", f))
 	}
@@ -308,12 +284,12 @@ func (e *Encoder) WriteFloat32(f float32, order binary.ByteOrder) (err error) {
 
 	i := math.Float32bits(f)
 	buf := make([]byte, TypeSize.Uint32)
-	order.PutUint32(buf, i)
+	LE.PutUint32(buf, i)
 
 	return e.toWriter(buf)
 }
 
-func (e *Encoder) WriteFloat64(f float64, order binary.ByteOrder) (err error) {
+func (e *Encoder) WriteFloat64(f float64) (err error) {
 	if traceEnabled {
 		zlog.Debug("encode: write float64", zap.Float64("val", f))
 	}
@@ -325,7 +301,7 @@ func (e *Encoder) WriteFloat64(f float64, order binary.ByteOrder) (err error) {
 	}
 	i := math.Float64bits(f)
 	buf := make([]byte, TypeSize.Uint64)
-	order.PutUint64(buf, i)
+	LE.PutUint64(buf, i)
 
 	return e.toWriter(buf)
 }
@@ -338,7 +314,7 @@ func (e *Encoder) WriteString(s string) (err error) {
 }
 
 func (e *Encoder) WriteRustString(s string) (err error) {
-	err = e.WriteUint64(uint64(len(s)), binary.LittleEndian)
+	err = e.WriteUint64(uint64(len(s)))
 	if err != nil {
 		return err
 	}
@@ -369,32 +345,32 @@ func reflect_writeArrayOfBytes(e *Encoder, l int, rv reflect.Value) error {
 	return e.WriteBytes(arr, false)
 }
 
-func reflect_writeArrayOfUint16(e *Encoder, l int, rv reflect.Value, order binary.ByteOrder) error {
+func reflect_writeArrayOfUint16(e *Encoder, l int, rv reflect.Value) error {
 	arr := make([]byte, l*2)
 	for i := 0; i < l; i++ {
-		order.PutUint16(arr[i*2:], uint16(rv.Index(i).Uint()))
+		LE.PutUint16(arr[i*2:], uint16(rv.Index(i).Uint()))
 	}
 	return e.WriteBytes(arr, false)
 }
 
-func reflect_writeArrayOfUint32(e *Encoder, l int, rv reflect.Value, order binary.ByteOrder) error {
+func reflect_writeArrayOfUint32(e *Encoder, l int, rv reflect.Value) error {
 	arr := make([]byte, l*4)
 	for i := 0; i < l; i++ {
-		order.PutUint32(arr[i*4:], uint32(rv.Index(i).Uint()))
+		LE.PutUint32(arr[i*4:], uint32(rv.Index(i).Uint()))
 	}
 	return e.WriteBytes(arr, false)
 }
 
-func reflect_writeArrayOfUint64(e *Encoder, l int, rv reflect.Value, order binary.ByteOrder) error {
+func reflect_writeArrayOfUint64(e *Encoder, l int, rv reflect.Value) error {
 	arr := make([]byte, l*8)
 	for i := 0; i < l; i++ {
-		order.PutUint64(arr[i*8:], uint64(rv.Index(i).Uint()))
+		LE.PutUint64(arr[i*8:], uint64(rv.Index(i).Uint()))
 	}
 	return e.WriteBytes(arr, false)
 }
 
 // reflect_writeArrayOfUint_ is used for writing arrays/slices of uints of any size.
-func reflect_writeArrayOfUint_(e *Encoder, l int, k reflect.Kind, rv reflect.Value, order binary.ByteOrder) error {
+func reflect_writeArrayOfUint_(e *Encoder, l int, k reflect.Kind, rv reflect.Value) error {
 	switch k {
 	// case reflect.Uint:
 	// 	// switch on system architecture (32 or 64 bit)
@@ -405,11 +381,11 @@ func reflect_writeArrayOfUint_(e *Encoder, l int, k reflect.Kind, rv reflect.Val
 	case reflect.Uint8:
 		return reflect_writeArrayOfBytes(e, l, rv)
 	case reflect.Uint16:
-		return reflect_writeArrayOfUint16(e, l, rv, order)
+		return reflect_writeArrayOfUint16(e, l, rv)
 	case reflect.Uint32:
-		return reflect_writeArrayOfUint32(e, l, rv, order)
+		return reflect_writeArrayOfUint32(e, l, rv)
 	case reflect.Uint64:
-		return reflect_writeArrayOfUint64(e, l, rv, order)
+		return reflect_writeArrayOfUint64(e, l, rv)
 	default:
 		return fmt.Errorf("unsupported kind: %v", k)
 	}

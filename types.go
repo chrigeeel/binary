@@ -207,7 +207,7 @@ func (f *JSONFloat64) UnmarshalJSON(data []byte) error {
 }
 
 func (f *JSONFloat64) UnmarshalWithDecoder(dec *Decoder) error {
-	value, err := dec.ReadFloat64(dec.currentFieldOpt.Order)
+	value, err := dec.ReadFloat64()
 	if err != nil {
 		return err
 	}
@@ -217,7 +217,7 @@ func (f *JSONFloat64) UnmarshalWithDecoder(dec *Decoder) error {
 }
 
 func (f JSONFloat64) MarshalWithEncoder(enc *Encoder) error {
-	return enc.WriteFloat64(float64(f), enc.currentFieldOpt.Order)
+	return enc.WriteFloat64(float64(f))
 }
 
 type Int64 int64
@@ -267,7 +267,7 @@ func (i *Int64) UnmarshalJSON(data []byte) error {
 }
 
 func (i *Int64) UnmarshalWithDecoder(dec *Decoder) error {
-	value, err := dec.ReadInt64(dec.currentFieldOpt.Order)
+	value, err := dec.ReadInt64()
 	if err != nil {
 		return err
 	}
@@ -277,7 +277,7 @@ func (i *Int64) UnmarshalWithDecoder(dec *Decoder) error {
 }
 
 func (i Int64) MarshalWithEncoder(enc *Encoder) error {
-	return enc.WriteInt64(int64(i), enc.currentFieldOpt.Order)
+	return enc.WriteInt64(int64(i))
 }
 
 type Uint64 uint64
@@ -327,7 +327,7 @@ func (i *Uint64) UnmarshalJSON(data []byte) error {
 }
 
 func (i *Uint64) UnmarshalWithDecoder(dec *Decoder) error {
-	value, err := dec.ReadUint64(dec.currentFieldOpt.Order)
+	value, err := dec.ReadUint64()
 	if err != nil {
 		return err
 	}
@@ -337,5 +337,5 @@ func (i *Uint64) UnmarshalWithDecoder(dec *Decoder) error {
 }
 
 func (i Uint64) MarshalWithEncoder(enc *Encoder) error {
-	return enc.WriteUint64(uint64(i), enc.currentFieldOpt.Order)
+	return enc.WriteUint64(uint64(i))
 }

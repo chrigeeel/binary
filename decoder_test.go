@@ -482,8 +482,7 @@ func TestDecoder_Uint128_2(t *testing.T) {
 
 	n, err := d.ReadUint128()
 	assert.NoError(t, err)
-	assert.Equal(t, Uint128{Hi: 0xb6d, Lo: 0xffffffffffd3880d}, n)
-
+	assert.Equal(t, Uint128{0xffffffffffd3880d, 0xb6d}, n)
 }
 
 func TestDecoder_BinaryStruct(t *testing.T) {
@@ -512,16 +511,16 @@ func TestDecoder_BinaryStruct(t *testing.T) {
 	assert.Equal(t, Uint64(23), s.F16)
 	assert.Equal(t, JSONFloat64(3.14), s.F17)
 	assert.Equal(t, Uint128{
-		Lo: 10,
-		Hi: 82,
+		10,
+		82,
 	}, s.F18)
-	assert.Equal(t, Int128{
-		Lo: 7,
-		Hi: 3,
+	assert.Equal(t, Uint128{
+		7,
+		3,
 	}, s.F19)
-	assert.Equal(t, Float128{
-		Lo: 10,
-		Hi: 82,
+	assert.Equal(t, Uint128{
+		10,
+		82,
 	}, s.F20)
 	assert.Equal(t, Varuint32(999), s.F21)
 	assert.Equal(t, Varint32(-999), s.F22)
@@ -536,7 +535,7 @@ func TestDecoder_Decode_No_Ptr(t *testing.T) {
 }
 
 func TestDecoder_BinaryTestStructWithTags(t *testing.T) {
-	cnt, err := hex.DecodeString("ffb50063ffffff19000003e7ffffffffffffcc51000000000001869fc1b90a3d400f5c28f5c28f5c010000000000000000")
+	cnt, err := hex.DecodeString("b5ff630019ffffffe703000051ccffffffffffff9f860100000000003d0ab9c15c8fc2f5285c0f400100000000010000000263000000000000002100000000000000")
 	require.NoError(t, err)
 
 	s := &binaryTestStructWithTags{}
