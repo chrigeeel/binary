@@ -40,12 +40,21 @@ func NewUint128From64(x uint64) *Uint128 {
 	return z
 }
 
+func NewUint128FromBig(x *big.Int) *Uint128 {
+	z := &Uint128{}
+
+	z[0] = x.Uint64()
+	z[1] = x.Rsh(x, 64).Uint64()
+
+	return z
+}
+
 func (z *Uint128) Uint64() uint64 {
 	return z[0]
 }
 
-func (z *Uint128) Clone() *Uint256 {
-	return &Uint256{z[0], z[1]}
+func (z *Uint128) Clone() *Uint128 {
+	return &Uint128{z[0], z[1]}
 }
 
 func (z *Uint128) Add(x, y *Uint128) *Uint128 {
@@ -109,28 +118,32 @@ func (z *Uint128) Mul64(x *Uint128, y uint64) *Uint128 {
 
 // Div returns u/v.
 func (z *Uint128) Div(x, v *Uint128) *Uint128 {
-	z, _ = QuoRem(x, v)
+	q, _ := QuoRem(x, v)
+	z[0], z[1] = q[0], q[1]
 	return z
 }
 
 // Div64 returns u/v.
 func (z *Uint128) Div64(x *Uint128, v uint64) *Uint128 {
-	z, _ = QuoRem64(x, v)
+	q, _ := QuoRem64(x, v)
+	z[0], z[1] = q[0], q[1]
 	return z
 }
 
 func (z *Uint128) Mod(x, y *Uint128) *Uint128 {
 	_, r := QuoRem(x, y)
-	return r
+	z[0], z[1] = r[0], r[1]
+	return z
 }
 
-func (z *Uint128) Mod64(x *Uint128, y uint64) uint64 {
+func (z *Uint128) Mod64(x *Uint128, y uint64) *Uint128 {
 	_, r := QuoRem64(x, y)
-	return r
+	z[0], z[1] = r, 0
+	return z
 }
 
 func QuoRem(x, y *Uint128) (*Uint128, *Uint128) {
-	if x[1] == 0 {
+	if y[1] == 0 {
 		q, r64 := QuoRem64(x, y[0])
 		return q, NewUint128From64(r64)
 	} else {
@@ -145,8 +158,8 @@ func QuoRem(x, y *Uint128) (*Uint128, *Uint128) {
 		q := NewUint128From64(tq)
 		r := new(Uint128).Sub(x, new(Uint128).Mul64(y, tq))
 		if r.Cmp(y) >= 0 {
-			q = q.Add64(q, 1)
-			r = r.Sub(r, y)
+			q.Add64(q, 1)
+			r.Sub(r, y)
 		}
 		return q, r
 	}
@@ -180,6 +193,13 @@ func (z *Uint128) Rsh(x *Uint128, n uint) *Uint128 {
 		z[0], z[1] = x[0]>>n|x[1]<<(64-n), x[1]>>n
 	}
 	return z
+}
+
+func (z *Uint128) LeadingZeros() int {
+	if z[1] > 0 {
+		return bits.LeadingZeros64(z[1])
+	}
+	return 64 + bits.LeadingZeros64(z[0])
 }
 
 func (z *Uint128) IsZero() bool {
